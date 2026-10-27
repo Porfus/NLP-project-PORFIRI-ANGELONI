@@ -10,7 +10,7 @@ import torch.nn as nn
 from transformers import AutoModel
 
 class BaselineBERT(nn.Module):
-    def __init__(self, model_name="dbmdz/bert-base-italian-cased", num_classes=12, dropout_prob=0.2):
+    def __init__(self, model_name="dbmdz/bert-base-italian-xxl-cased", num_classes=12, dropout_prob=0.2):
         super().__init__()
         self.encoder = AutoModel.from_pretrained(model_name)
         hidden_size = self.encoder.config.hidden_size
@@ -28,7 +28,7 @@ class BaselineBERT(nn.Module):
 class DialectFeatureFusionBERT(nn.Module):
     def __init__(
         self,
-        model_name="dbmdz/bert-base-italian-cased",
+        model_name="dbmdz/bert-base-italian-xxl-cased",
         num_classes=12,
         aux_dim=501,
         aux_proj_dim=128,

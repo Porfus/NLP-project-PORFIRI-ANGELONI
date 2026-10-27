@@ -28,7 +28,7 @@ class BaselineBERT(nn.Module):
 class DialectFeatureFusionBERT(nn.Module):
     def __init__(
         self,
-        model_name="dbmdz/bert-base-italian-xxl-cased",
+        model_name="dbmdz/bert-base-italian-cased",
         num_classes=12,
         aux_dim=501,
         aux_proj_dim=128,

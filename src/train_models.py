@@ -15,48 +15,13 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
 from sklearn.metrics import f1_score, accuracy_score, classification_report
 
 from feature_extraction import DialectAuxiliaryFeatureExtractor
 from models import BaselineBERT, DialectFeatureFusionBERT
-
-DIALECT_CLASSES = sorted([
-    'eml', 'fur', 'it', 'lij', 'lld', 'lmo',
-    'nap', 'pms', 'roa_tara', 'sc', 'scn', 'vec'
-])
-LABEL2ID = {d: i for i, d in enumerate(DIALECT_CLASSES)}
-ID2LABEL = {i: d for i, d in enumerate(DIALECT_CLASSES)}
-
-class DialectDataset(Dataset):
-    def __init__(self, texts, labels, tokenizer, max_len=70, aux_features=None):
-        self.texts = texts
-        self.labels = [LABEL2ID[l] for l in labels]
-        self.tokenizer = tokenizer
-        self.max_len = max_len
-        self.aux_features = aux_features
-
-    def __len__(self):
-        return len(self.texts)
-
-    def __getitem__(self, idx):
-        text = str(self.texts[idx])
-        encoding = self.tokenizer(
-            text,
-            truncation=True,
-            padding='max_length',
-            max_length=self.max_len,
-            return_tensors='pt'
-        )
-        item = {
-            'input_ids': encoding['input_ids'].squeeze(0),
-            'attention_mask': encoding['attention_mask'].squeeze(0),
-            'label': torch.tensor(self.labels[idx], dtype=torch.long)
-        }
-        if self.aux_features is not None:
-            item['aux_features'] = self.aux_features[idx]
-        return item
+from dataset import DialectDataset, DIALECT_CLASSES
 
 def evaluate(model, val_loader, device, criterion, is_fusion=False):
     model.eval()

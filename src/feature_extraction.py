@@ -215,8 +215,7 @@ _GENERAL_NAMES = [
     "log_n_words", "mean_word_len", "apos_rate", "lead_apos_rate", "diacritic_rate",
     "circumflex_rate", "front_vowel_rate", "geminate_rate", "cluster3_rate", "cluster4_rate",
     "final_a", "final_e", "final_i", "final_o", "final_u", "final_accented", "final_schwa",
-    "final_consonant", "final_s", "x_rate", "k_rate", "j_rate", "l_bar_rate", "tz_rate",
-    "std_italian_rate",
+    "final_consonant", "final_s", "x_rate", "k_rate", "j_rate", "l_bar_rate", "tz_rate"
 ]
 _TOKENIZER_NAMES = ["fertility", "max_word_fertility", "frac_words_ge3_pieces", "unk_ratio"]
 

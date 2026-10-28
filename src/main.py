@@ -8,51 +8,19 @@ Calcola Macro F1, Weighted F1 e salva il best model checkpoint.
 """
 
 import os
-import sys
 import argparse
-import time
-import numpy as np
+import joblib
 import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer, get_linear_schedule_with_warmup
-from sklearn.metrics import f1_score, accuracy_score, classification_report
 
 from feature_extraction import DialectAuxiliaryFeatureExtractor
 from models import BaselineBERT, DialectFeatureFusionBERT
 from dataset import DialectDataset, DIALECT_CLASSES
+from training_functions import fit, evaluate
 
-def evaluate(model, val_loader, device, criterion, is_fusion=False):
-    model.eval()
-    total_loss = 0.0
-    all_preds = []
-    all_labels = []
-
-    with torch.no_grad():
-        for batch in val_loader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['label'].to(device)
-            
-            kwargs = {}
-            if is_fusion:
-                kwargs['aux_features'] = batch['aux_features'].to(device)
-
-            outputs = model(input_ids=input_ids, attention_mask=attention_mask, **kwargs)
-            loss = criterion(outputs, labels)
-            total_loss += loss.item()
-
-            preds = torch.argmax(outputs, dim=-1).cpu().numpy()
-            all_preds.extend(preds)
-            all_labels.extend(labels.cpu().numpy())
-
-    avg_loss = total_loss / len(val_loader)
-    macro_f1 = f1_score(all_labels, all_preds, average='macro')
-    weighted_f1 = f1_score(all_labels, all_preds, average='weighted')
-    acc = accuracy_score(all_labels, all_preds)
-
-    return avg_loss, macro_f1, weighted_f1, acc, all_preds, all_labels
 
 def main():
     parser = argparse.ArgumentParser()
@@ -83,11 +51,13 @@ def main():
     train_df = pd.read_csv(args.train_path)
     val_df = pd.read_csv(args.val_path)
 
-    # Subsample controllato per la validazione durante le epoche
+    # Subsample controllato per la validazione durante le epoche (stratificato per dialetto)
     if args.val_subset and len(val_df) > args.val_subset:
-        val_df = val_df.groupby('dial', group_keys=False).apply(
-            lambda x: x.sample(min(len(x), int(args.val_subset / 12)), random_state=42)
-        ).reset_index(drop=True)
+        n_per_class = args.val_subset // len(DIALECT_CLASSES)
+        val_df = pd.concat(
+            [g.sample(n=min(len(g), n_per_class), random_state=42) for _, g in val_df.groupby('dial')],
+            ignore_index=True
+        )
     print(f"-> Train: {len(train_df):,} campioni | Val (subsample): {len(val_df):,} campioni")
 
     train_texts = train_df['text'].tolist()
@@ -108,12 +78,19 @@ def main():
         val_aux = extractor.transform(val_texts)
         aux_dim = train_aux.shape[1]
         print(f"-> Feature ausiliarie estratte: dimensione = {aux_dim}")
+        # Salva l'estrattore (vocabolari TF-IDF + scaler): serve per l'inferenza
+        extractor_path = os.path.join(args.save_dir, "fusion_feature_extractor.joblib")
+        joblib.dump(extractor, extractor_path)
+        print(f"-> Estrattore salvato in '{extractor_path}'")
 
     train_dataset = DialectDataset(train_texts, train_labels, tokenizer, max_len=args.max_len, aux_features=train_aux)
     val_dataset = DialectDataset(val_texts, val_labels, tokenizer, max_len=args.max_len, aux_features=val_aux)
 
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=2, pin_memory=True)
-    val_loader = DataLoader(val_dataset, batch_size=args.batch_size * 2, shuffle=False, num_workers=2, pin_memory=True)
+    # drop_last=True: BatchNorm1d (ramo fusion) fallisce con un batch da 1 campione
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
+                              num_workers=2, pin_memory=True, drop_last=True)
+    val_loader = DataLoader(val_dataset, batch_size=args.batch_size * 2, shuffle=False,
+                            num_workers=2, pin_memory=True)
 
     # 3. Creazione Modello
     if is_fusion:
@@ -130,59 +107,39 @@ def main():
             {'params': model.classifier.parameters(), 'lr': args.lr_aux}
         ]
 
+    # 4. Model training setup
     model.to(device)
     optimizer = torch.optim.AdamW(optimizer_params, weight_decay=0.01)
     total_steps = len(train_loader) * args.epochs
-    scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=int(total_steps * 0.1), num_training_steps=total_steps)
+    scheduler = get_linear_schedule_with_warmup(
+        optimizer, num_warmup_steps=int(total_steps * 0.1), num_training_steps=total_steps)
     criterion = nn.CrossEntropyLoss()
-    scaler = torch.cuda.amp.GradScaler(enabled=(device.type == 'cuda'))
+    scaler = torch.amp.GradScaler('cuda', enabled=(device.type == 'cuda'))
 
-    # 4. Loop di addestramento
+    # 5. Training-validation loop
     best_macro_f1 = 0.0
     best_checkpoint = os.path.join(args.save_dir, f"best_{args.model_type}_model.pt")
 
     print("\n=== INIZIO ADDESTRAMENTO ===")
+
     for epoch in range(1, args.epochs + 1):
-        model.train()
-        total_train_loss = 0.0
-        start_time = time.time()
+        # train step (un'intera epoca)
+        train_loss, elapsed = fit(model, device, optimizer, scheduler, criterion, scaler, train_loader, is_fusion)
+        print(f"Epoch {epoch}/{args.epochs} | Train Loss: {train_loss:.4f} | Tempo: {elapsed:.1f}s")
 
-        for step, batch in enumerate(train_loader, 1):
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['label'].to(device)
+        # val step
+        val_loss, macro_f1, weighted_f1, acc, _, _ = evaluate(model, val_loader, device, criterion, is_fusion)
+        print(f"\n---> FINE EPOCA {epoch} | Val Loss: {val_loss:.4f} | MACRO F1: {macro_f1:.4f} "
+              f"| Weighted F1: {weighted_f1:.4f} | Acc: {acc:.4f}")
 
-            kwargs = {}
-            if is_fusion:
-                kwargs['aux_features'] = batch['aux_features'].to(device)
-
-            optimizer.zero_grad()
-            with torch.cuda.amp.autocast(enabled=(device.type == 'cuda')):
-                outputs = model(input_ids=input_ids, attention_mask=attention_mask, **kwargs)
-                loss = criterion(outputs, labels)
-
-            scaler.scale(loss).backward()
-            scaler.unscale_(optimizer)
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            scaler.step(optimizer)
-            scaler.update()
-            scheduler.step()
-
-            total_train_loss += loss.item()
-            if step % 200 == 0 or step == len(train_loader):
-                elapsed = time.time() - start_time
-                print(f"Epoch {epoch}/{args.epochs} | Step {step}/{len(train_loader)} | Loss: {loss.item():.4f} | Tempo: {elapsed:.1f}s")
-
-        # Validazione a fine epoca
-        val_loss, macro_f1, weighted_f1, acc, _, _ = evaluate(model, val_loader, device, criterion, is_fusion=is_fusion)
-        print(f"\n---> FINE EPOCA {epoch} | Val Loss: {val_loss:.4f} | MACRO F1: {macro_f1:.4f} | Weighted F1: {weighted_f1:.4f} | Acc: {acc:.4f}")
-
+        # checkpoint
         if macro_f1 > best_macro_f1:
             best_macro_f1 = macro_f1
             torch.save(model.state_dict(), best_checkpoint)
             print(f"*** Nuovo miglior modello salvato con Macro F1: {best_macro_f1:.4f} in '{best_checkpoint}' ***\n")
 
     print(f"\n=== TRAINING COMPLETATO [{args.model_type.upper()}] | Best Macro F1: {best_macro_f1:.4f} ===")
+
 
 if __name__ == '__main__':
     main()

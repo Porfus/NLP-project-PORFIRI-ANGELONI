@@ -15,8 +15,11 @@ Blocchi di feature (concatenati, poi standardizzati):
                                                      + un punteggio aggregato per dialetto
 
 Note di progetto:
- - Tutti i testi sono normalizzati una sola volta (NFC, apostrofi unificati, lowercase)
+ - Tutti i testi sono normalizzati una sola volta (NFC, apostrofi unificati)
    SENZA rimuovere i diacritici (ü, ö, ł, â, ç, ə... sono segnali discriminanti).
+   Il testo normalizzato mantiene le maiuscole: la fertility del tokenizer si calcola
+   su di esso (il tokenizer è cased), mentre TF-IDF, statistiche ortografiche e regex
+   usano la versione in minuscolo (.lower()).
  - Le feature a regex sono "rate" per parola (conteggio / n_parole) per essere
    indipendenti dalla lunghezza della frase.
  - fit/transform lavorano a batch: la matrice densa completa non viene mai
@@ -44,9 +47,10 @@ _L = r"[^\W\d_]"  # una lettera unicode
 _WORD_RE = re.compile(rf"{_L}+(?:'{_L}+)*")
 
 
-def normalize_text(text):
-    """NFC + apostrofi unificati + lowercase. Mantiene i diacritici."""
-    return unicodedata.normalize("NFC", str(text)).translate(_APOS_TABLE).lower()
+def normalize_text(text, lower=True):
+    """NFC + apostrofi unificati (+ lowercase se lower=True). Mantiene i diacritici."""
+    out = unicodedata.normalize("NFC", str(text)).translate(_APOS_TABLE)
+    return out.lower() if lower else out
 
 
 def _edge_analyzer(text):
@@ -292,7 +296,9 @@ class DialectAuxiliaryFeatureExtractor:
 
     @staticmethod
     def _normalize_all(texts):
-        return [normalize_text(t) for t in texts]
+        """NFC + apostrofi unificati, MANTENENDO le maiuscole (il tokenizer è cased).
+        Le feature che richiedono minuscolo applicano .lower() al loro interno."""
+        return [normalize_text(t, lower=False) for t in texts]
 
     def _batches(self, items):
         for i in range(0, len(items), self.batch_size):
@@ -331,7 +337,7 @@ class DialectAuxiliaryFeatureExtractor:
 
     def _compute_fertility(self, texts):
         """Compatibilità con la versione precedente: colonna (N, 1) di fertility."""
-        out = [self._tokenizer_stats(_WORD_RE.findall(normalize_text(t)))[0] for t in texts]
+        out = [self._tokenizer_stats(_WORD_RE.findall(normalize_text(t, lower=False)))[0] for t in texts]
         return np.array(out, dtype=np.float32).reshape(-1, 1)
 
     # ------------------------------------------------------------------ #
@@ -381,11 +387,15 @@ class DialectAuxiliaryFeatureExtractor:
             aggs.append(total)
         return rates + aggs
 
-    def _handcrafted(self, norm_texts):
-        out = np.zeros((len(norm_texts), len(self._hand_names)), dtype=np.float32)
-        for i, text in enumerate(norm_texts):
+    def _handcrafted(self, cased_texts):
+        """cased_texts: testi normalizzati ma con maiuscole. Fertility sul testo cased,
+        statistiche ortografiche e regex sul testo in minuscolo."""
+        out = np.zeros((len(cased_texts), len(self._hand_names)), dtype=np.float32)
+        for i, cased in enumerate(cased_texts):
+            text = cased.lower()
             words = _WORD_RE.findall(text)
-            row = self._general_stats(text, words) + self._tokenizer_stats(words)
+            cased_words = _WORD_RE.findall(cased)
+            row = self._general_stats(text, words) + self._tokenizer_stats(cased_words)
             if self.use_dialect_markers:
                 row += self._marker_stats(text, len(words))
             out[i] = row
@@ -395,8 +405,9 @@ class DialectAuxiliaryFeatureExtractor:
     # Assemblaggio
     # ------------------------------------------------------------------ #
     def _assemble(self, norm_batch, hand=None):
-        char = self.char_tfidf.transform(norm_batch).toarray().astype(np.float32, copy=False)
-        edge = self.edge_tfidf.transform(norm_batch).toarray().astype(np.float32, copy=False)
+        lower_batch = [t.lower() for t in norm_batch]
+        char = self.char_tfidf.transform(lower_batch).toarray().astype(np.float32, copy=False)
+        edge = self.edge_tfidf.transform(lower_batch).toarray().astype(np.float32, copy=False)
         if hand is None:
             hand = self._handcrafted(norm_batch)
         return np.hstack([char, edge, hand])
@@ -410,8 +421,10 @@ class DialectAuxiliaryFeatureExtractor:
             print(f"Fit Feature Extractor su {len(texts):,} frasi...")
         norm = self._normalize_all(texts)
 
-        self.char_tfidf.fit(norm)
-        self.edge_tfidf.fit(norm)
+        lower_norm = [t.lower() for t in norm]
+        self.char_tfidf.fit(lower_norm)
+        self.edge_tfidf.fit(lower_norm)
+        del lower_norm
 
         self.scaler = StandardScaler()
         n_dialects = len(DIALECT_MARKERS)

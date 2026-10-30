@@ -19,8 +19,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 def temperature_sample_dataset(
-    train_path='wiki-dump/Dataset/train_sentences.csv',
-    output_path='wiki-dump/Dataset/train_neural_balanced.csv',
+    train_path='NLP_project/wiki-dump/Dataset/train_sentences.csv',
+    output_path='NLP_project/wiki-dump/Dataset/train_neural_balanced.csv',
     plot_path='temperature_sampling_analysis.png',
     it_cap=150000,
     alpha=0.5,
@@ -33,7 +33,7 @@ def temperature_sample_dataset(
     if not os.path.exists(train_path):
         raise FileNotFoundError(f"File {train_path} non trovato!")
 
-    df_train = pd.read_csv(train_path)
+    df_train = pd.read_csv(train_path, engine='python', on_bad_lines='skip')
     print(f"-> Totale frasi caricate: {len(df_train):,}")
 
     orig_counts = df_train['dial'].value_counts()

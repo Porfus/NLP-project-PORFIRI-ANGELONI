@@ -48,9 +48,9 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
 
     print(f"2. Caricamento dati da '{args.train_path}' e '{args.val_path}'...")
-    train_df = pd.read_csv(args.train_path)
-    val_df = pd.read_csv(args.val_path)
-
+    train_df = pd.read_csv(args.train_path, engine='python', on_bad_lines='skip')
+    val_df = pd.read_csv(args.val_path, engine='python', on_bad_lines='skip')
+    
     # Subsample controllato per la validazione durante le epoche (stratificato per dialetto)
     if args.val_subset and len(val_df) > args.val_subset:
         n_per_class = args.val_subset // len(DIALECT_CLASSES)

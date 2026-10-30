@@ -1,0 +1,6 @@
+
+Due to MODULEPATH changes, the following have been reloaded:
+  1) ncurses/.6.4     2) zlib/.1.2.13
+
+/hpchome/luca26/nlp_env/lib/python3.11/site-packages/sklearn/linear_model/_sag.py:348: ConvergenceWarning: The max_iter was reached which means the coef_ did not converge
+  warnings.warn(

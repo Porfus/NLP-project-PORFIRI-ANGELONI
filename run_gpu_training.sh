@@ -1,18 +1,45 @@
 #!/bin/bash
-#SBATCH --job-name=bert_dialect_fusion
-#SBATCH --partition=gpu-1xA100
+#SBATCH --job-name=nlp_gpu_train
+#SBATCH --partition=gpu-1xA100,gpu-2xA100 # Cerca su entrambe (gpu-2xA100 ha nodi IDLE liberi ora!)
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=32G
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=28G                         # 28GB (rientra perfettamente nei 3.94GB/core di Elja)
 #SBATCH --time=04:00:00
-#SBATCH --output=slurm_gpu_%j.log
+#SBATCH --output=logs/gpu_train_%j.log
+#SBATCH --error=logs/gpu_train_%j.err
+
+
+# 1. Crea la cartella per i log se non esiste
+mkdir -p logs
+
+# Interrompe lo script se un comando fallisce
+set -e
+# 1. Spostati subito nella cartella del progetto
+cd ~/NLP_project
+mkdir -p logs checkpoints
+
+# 2. Configura i percorsi dei moduli di Elja e carica Python e CUDA
+module use /hpcapps/lib-edda/modules/all/Core
+module load Python/3.11.3
+module load CUDA/12.1.1 || true
 
 echo "=== ESECUZIONE JOB GPU SU CLUSTER ==="
 echo "Nodo assegnato: $SLURMD_NODENAME"
 echo "Data avvio: $(date)"
 
-# 1. Attivazione ambiente virtuale del cluster
+# 3. Attiva il tuo virtual environment
 source ~/nlp_env/bin/activate
+
+# 4. Controllo diagnostico della GPU (scrive nei log la conferma)
+echo "=========================================================="
+echo "Job avviato su: $(hostname)"
+echo "Data e ora:     $(date)"
+echo "Python in uso:  $(which python3)"
+echo "=========================================================="
+nvidia-smi
+python3 -c "import torch; print('CUDA disponibile in PyTorch:', torch.cuda.is_available()); print('Nome GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'NESSUNA GPU RILEVATA')"
+echo "=========================================================="
+
 
 # 2. Verifica presenza modello pre-scaricato
 MODEL_DIR="models/bert-base-italian-xxl-cased"

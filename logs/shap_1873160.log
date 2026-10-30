@@ -1,0 +1,9 @@
+=== AVVIO VALUTAZIONE SHAP SU GPU ===
+Nodo assegnato: gpu-1
+Data avvio: Fri Oct 30 11:32:01 GMT 2026
+GPU rilevata:
+NVIDIA A100-PCIE-40GB, 40960 MiB, 535.309.01
+NVIDIA A100-PCIE-40GB, 40960 MiB, 535.309.01
+==========================================
+ Esecuzione Notebook Interpretability & SHAP...
+=== JOB SHAP COMPLETATO CON SUCCESSO: Fri Oct 30 11:33:11 GMT 2026 ===

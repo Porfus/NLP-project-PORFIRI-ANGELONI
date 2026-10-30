@@ -1,0 +1,37 @@
+=== AVVIO VALUTAZIONE BENCHMARK SU GPU ===
+Nodo assegnato: gpu-1
+Data avvio: Fri Oct 30 10:26:05 GMT 2026
+GPU rilevata:
+NVIDIA A100-PCIE-40GB, 40960 MiB, 535.309.01
+NVIDIA A100-PCIE-40GB, 40960 MiB, 535.309.01
+==========================================
+=== ESECUZIONE BENCHMARK COMPARATIVO SU: wiki-dump/Dataset/test_sentences.csv (Device: cuda) ===
+
+-> Campioni di test caricati: 877,048
+
+============================================================
+1. VALUTAZIONE BASELINE 1 (LOGISTIC REGRESSION + TF-IDF)
+============================================================
+-> Macro F1: 0.8962 | Weighted F1: 0.9841 | Acc: 0.9831 (28.1s)
+
+============================================================
+2. VALUTAZIONE BASELINE 2 (BERT XXL PURO)
+============================================================
+-> Macro F1: 0.9662 | Weighted F1: 0.9954 | Acc: 0.9953 (153.3s)
+
+============================================================
+3. VALUTAZIONE MODELLO PROPOSTO (FEATURE FUSION BERT XXL)
+============================================================
+-> Estrazione feature ausiliarie per il test set...
+-> Macro F1: 0.9668 | Weighted F1: 0.9956 | Acc: 0.9955 (155.3s)
+
+======================================================================
+ TABELLA COMPARATIVA FINALE DEI RISULTATI
+======================================================================
+                                Macro F1 Weighted F1  Accuracy    Time
+Logistic Regression (VarDial)   0.896221    0.984137  0.983121   28.1s
+Baseline BERT XXL               0.966192    0.995443  0.995338  153.3s
+Feature Fusion BERT (Proposto)  0.966841    0.995631  0.995545  155.3s
+======================================================================
+-> Tabella salvata in 'checkpoints/benchmark_summary.csv'
+=== VALUTAZIONE COMPLETATA: Fri Oct 30 10:41:05 GMT 2026 ===

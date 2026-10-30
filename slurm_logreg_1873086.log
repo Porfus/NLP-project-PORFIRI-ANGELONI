@@ -1,0 +1,6 @@
+
+Due to MODULEPATH changes, the following have been reloaded:
+  1) ncurses/.6.4     2) zlib/.1.2.13
+
+/var/spool/slurm/d/job1873086/slurm_script: line 16: syntax error near unexpected token `)'
+/var/spool/slurm/d/job1873086/slurm_script: line 16: `echo "=== ESECUZIONE TRAINING BASELINE 1 (LOGISTIC REGRESSION) ===")'

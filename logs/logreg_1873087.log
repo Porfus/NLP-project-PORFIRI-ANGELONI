@@ -1,0 +1,54 @@
+=== ESECUZIONE TRAINING BASELINE 1 (LOGISTIC REGRESSION) ===
+Nodo assegnato: compute-63
+Data avvio: Fri Oct 30 09:59:21 GMT 2026
+Cores allocati: 8
+Python in uso: /hpchome/luca26/nlp_env/bin/python3
+===========================================================
+=== AVVIO ADDESTRAMENTO BASELINE 1: LOGISTIC REGRESSION + TF-IDF ===
+1. Caricamento dati da 'wiki-dump/Dataset/train_neural_balanced.csv' e 'wiki-dump/Dataset/val_sentences.csv'...
+-> Train samples: 200,000
+-> Val samples:   873,361
+
+2. Estrazione feature TF-IDF (1-2 grammi, max 50,000)...
+-> TF-IDF completato in 106.7s
+   Shape Train: (200000, 50000) | Non-zero: 4,379,502
+
+3. Scaling varianza con StandardScaler(with_mean=False)...
+-> Scaling completato in 0.5s
+
+4. Addestramento Logistic Regression (solver='sag', class_weight='balanced')...
+-> Addestramento completato in 767.9s
+
+-> Modello salvato con successo in 'checkpoints/baseline_logreg.joblib' (7.53 MB)
+
+5. Valutazione sul Validation Set...
+=================================================================
+ RISULTATI BASELINE 1 (LOGISTIC REGRESSION + TF-IDF) [200k train]
+=================================================================
+-> MACRO F1-SCORE:    0.8910  (metrica ufficiale di riferimento)
+-> WEIGHTED F1-SCORE: 0.9831
+-> ACCURACY:          0.9820
+=================================================================
+
+--- CLASSIFICATION REPORT DETTAGLIATO ---
+              precision    recall  f1-score   support
+
+         eml     0.5805    0.9410    0.7180      1763
+         fur     0.8730    0.9726    0.9201      2517
+          it     0.9991    0.9825    0.9907    783487
+         lij     0.7633    0.9549    0.8484      6100
+         lld     0.9315    0.9832    0.9566      4466
+         lmo     0.9378    0.9836    0.9602     25987
+         nap     0.7080    0.9645    0.8166      3804
+         pms     0.9524    0.9884    0.9701      2328
+    roa_tara     0.5972    0.9560    0.7352      3956
+          sc     0.9466    0.9897    0.9677      8738
+         scn     0.7570    0.9798    0.8541     11448
+         vec     0.9291    0.9803    0.9540     18767
+
+    accuracy                         0.9820    873361
+   macro avg     0.8313    0.9730    0.8910    873361
+weighted avg     0.9857    0.9820    0.9831    873361
+
+-> Matrice di confusione salvata in 'checkpoints/cm_baseline_logreg.png'
+=== TRAINING COMPLETATO: Fri Oct 30 10:15:14 GMT 2026 ===

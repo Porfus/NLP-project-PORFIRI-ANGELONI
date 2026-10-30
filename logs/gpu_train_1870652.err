@@ -1,0 +1,29 @@
+
+Due to MODULEPATH changes, the following have been reloaded:
+  1) ncurses/.6.4     2) zlib/.1.2.13
+
+[transformers] Disabling PyTorch because PyTorch >= 2.6 is required but found 2.5.1+cu121
+[transformers] PyTorch was not found. Models won't be available and only tokenizers, configuration and file/data utilities can be used.
+Traceback (most recent call last):
+  File "/hpchome/luca26/NLP_project/src/main.py", line 145, in <module>
+    main()
+  File "/hpchome/luca26/NLP_project/src/main.py", line 51, in main
+    train_df = pd.read_csv(args.train_path)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/hpchome/luca26/nlp_env/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 1866, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/hpchome/luca26/nlp_env/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 423, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/hpchome/luca26/nlp_env/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 2721, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/hpchome/luca26/nlp_env/lib/python3.11/site-packages/pandas/io/parsers/readers.py", line 3006, in _make_engine
+    return mapping[engine](f, **self.options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/hpchome/luca26/nlp_env/lib/python3.11/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 107, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/parsers.pyx", line 735, in pandas._libs.parsers.TextReader.__cinit__
+pandas.errors.EmptyDataError: No columns to parse from file

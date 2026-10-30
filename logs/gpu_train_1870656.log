@@ -1,0 +1,288 @@
+=== ESECUZIONE JOB GPU SU CLUSTER ===
+Nodo assegnato: gpu-5
+Data avvio: Thu Oct 29 00:48:07 GMT 2026
+==========================================================
+Job avviato su: gpu-5
+Data e ora:     Thu Oct 29 00:48:07 GMT 2026
+Python in uso:  /hpchome/luca26/nlp_env/bin/python3
+==========================================================
+Thu Oct 29 00:48:07 2026       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.309.01             Driver Version: 535.309.01   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  | 00000000:65:00.0 Off |                    0 |
+| N/A   29C    P0              35W / 250W |      0MiB / 40960MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA A100-PCIE-40GB          On  | 00000000:B1:00.0 Off |                    0 |
+| N/A   29C    P0              33W / 250W |      0MiB / 40960MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+CUDA disponibile in PyTorch: True
+Nome GPU: NVIDIA A100-PCIE-40GB
+==========================================================
+============================================================
+FASE 1: ADDESTRAMENTO BASELINE 2 (BERT PURO)
+============================================================
+=== AVVIO TRAINING [BASELINE] SU DEVICE: cuda ===
+1. Inizializzazione tokenizer 'models/bert-base-italian-xxl-cased'...
+2. Caricamento dati da 'wiki-dump/Dataset/train_neural_balanced.csv' e 'wiki-dump/Dataset/val_sentences.csv'...
+-> Train: 200,000 campioni | Val (subsample): 43,530 campioni
+
+=== INIZIO ADDESTRAMENTO ===
+  step 200/6250 | avg loss 2.3843 | 7s
+  step 400/6250 | avg loss 1.8540 | 14s
+  step 600/6250 | avg loss 1.3546 | 20s
+  step 800/6250 | avg loss 1.0706 | 27s
+  step 1000/6250 | avg loss 0.8874 | 33s
+  step 1200/6250 | avg loss 0.7630 | 39s
+  step 1400/6250 | avg loss 0.6704 | 46s
+  step 1600/6250 | avg loss 0.6033 | 52s
+  step 1800/6250 | avg loss 0.5507 | 59s
+  step 2000/6250 | avg loss 0.5075 | 65s
+  step 2200/6250 | avg loss 0.4722 | 71s
+  step 2400/6250 | avg loss 0.4422 | 78s
+  step 2600/6250 | avg loss 0.4166 | 84s
+  step 2800/6250 | avg loss 0.3938 | 90s
+  step 3000/6250 | avg loss 0.3737 | 97s
+  step 3200/6250 | avg loss 0.3567 | 103s
+  step 3400/6250 | avg loss 0.3403 | 110s
+  step 3600/6250 | avg loss 0.3255 | 116s
+  step 3800/6250 | avg loss 0.3129 | 122s
+  step 4000/6250 | avg loss 0.3021 | 129s
+  step 4200/6250 | avg loss 0.2913 | 135s
+  step 4400/6250 | avg loss 0.2821 | 142s
+  step 4600/6250 | avg loss 0.2733 | 148s
+  step 4800/6250 | avg loss 0.2652 | 154s
+  step 5000/6250 | avg loss 0.2577 | 161s
+  step 5200/6250 | avg loss 0.2508 | 167s
+  step 5400/6250 | avg loss 0.2440 | 173s
+  step 5600/6250 | avg loss 0.2376 | 180s
+  step 5800/6250 | avg loss 0.2323 | 186s
+  step 6000/6250 | avg loss 0.2271 | 192s
+  step 6200/6250 | avg loss 0.2221 | 199s
+  step 6250/6250 | avg loss 0.2208 | 200s
+Epoch 1/3 | Train Loss: 0.2208 | Tempo: 200.1s
+
+---> FINE EPOCA 1 | Val Loss: 0.0744 | MACRO F1: 0.9846 | Weighted F1: 0.9848 | Acc: 0.9847
+*** Nuovo miglior modello salvato con Macro F1: 0.9846 in 'checkpoints/best_baseline_model.pt' ***
+
+  step 200/6250 | avg loss 0.0377 | 6s
+  step 400/6250 | avg loss 0.0373 | 13s
+  step 600/6250 | avg loss 0.0444 | 19s
+  step 800/6250 | avg loss 0.0441 | 26s
+  step 1000/6250 | avg loss 0.0451 | 32s
+  step 1200/6250 | avg loss 0.0462 | 38s
+  step 1400/6250 | avg loss 0.0475 | 45s
+  step 1600/6250 | avg loss 0.0475 | 51s
+  step 1800/6250 | avg loss 0.0482 | 57s
+  step 2000/6250 | avg loss 0.0479 | 64s
+  step 2200/6250 | avg loss 0.0478 | 70s
+  step 2400/6250 | avg loss 0.0476 | 77s
+  step 2600/6250 | avg loss 0.0473 | 83s
+  step 2800/6250 | avg loss 0.0470 | 89s
+  step 3000/6250 | avg loss 0.0469 | 96s
+  step 3200/6250 | avg loss 0.0469 | 102s
+  step 3400/6250 | avg loss 0.0468 | 108s
+  step 3600/6250 | avg loss 0.0466 | 115s
+  step 3800/6250 | avg loss 0.0456 | 121s
+  step 4000/6250 | avg loss 0.0452 | 128s
+  step 4200/6250 | avg loss 0.0450 | 134s
+  step 4400/6250 | avg loss 0.0450 | 140s
+  step 4600/6250 | avg loss 0.0444 | 147s
+  step 4800/6250 | avg loss 0.0444 | 153s
+  step 5000/6250 | avg loss 0.0447 | 159s
+  step 5200/6250 | avg loss 0.0442 | 166s
+  step 5400/6250 | avg loss 0.0437 | 172s
+  step 5600/6250 | avg loss 0.0433 | 178s
+  step 5800/6250 | avg loss 0.0430 | 185s
+  step 6000/6250 | avg loss 0.0432 | 191s
+  step 6200/6250 | avg loss 0.0430 | 198s
+  step 6250/6250 | avg loss 0.0429 | 199s
+Epoch 2/3 | Train Loss: 0.0429 | Tempo: 199.2s
+
+---> FINE EPOCA 2 | Val Loss: 0.0815 | MACRO F1: 0.9861 | Weighted F1: 0.9863 | Acc: 0.9862
+*** Nuovo miglior modello salvato con Macro F1: 0.9861 in 'checkpoints/best_baseline_model.pt' ***
+
+  step 200/6250 | avg loss 0.0161 | 6s
+  step 400/6250 | avg loss 0.0175 | 13s
+  step 600/6250 | avg loss 0.0180 | 19s
+  step 800/6250 | avg loss 0.0179 | 26s
+  step 1000/6250 | avg loss 0.0179 | 32s
+  step 1200/6250 | avg loss 0.0181 | 38s
+  step 1400/6250 | avg loss 0.0177 | 45s
+  step 1600/6250 | avg loss 0.0184 | 51s
+  step 1800/6250 | avg loss 0.0180 | 57s
+  step 2000/6250 | avg loss 0.0180 | 64s
+  step 2200/6250 | avg loss 0.0191 | 70s
+  step 2400/6250 | avg loss 0.0187 | 76s
+  step 2600/6250 | avg loss 0.0189 | 83s
+  step 2800/6250 | avg loss 0.0187 | 89s
+  step 3000/6250 | avg loss 0.0186 | 96s
+  step 3200/6250 | avg loss 0.0184 | 102s
+  step 3400/6250 | avg loss 0.0182 | 108s
+  step 3600/6250 | avg loss 0.0181 | 115s
+  step 3800/6250 | avg loss 0.0178 | 121s
+  step 4000/6250 | avg loss 0.0176 | 127s
+  step 4200/6250 | avg loss 0.0177 | 134s
+  step 4400/6250 | avg loss 0.0175 | 140s
+  step 4600/6250 | avg loss 0.0177 | 146s
+  step 4800/6250 | avg loss 0.0176 | 153s
+  step 5000/6250 | avg loss 0.0175 | 159s
+  step 5200/6250 | avg loss 0.0172 | 166s
+  step 5400/6250 | avg loss 0.0173 | 172s
+  step 5600/6250 | avg loss 0.0174 | 178s
+  step 5800/6250 | avg loss 0.0173 | 185s
+  step 6000/6250 | avg loss 0.0172 | 191s
+  step 6200/6250 | avg loss 0.0171 | 197s
+  step 6250/6250 | avg loss 0.0170 | 199s
+Epoch 3/3 | Train Loss: 0.0170 | Tempo: 199.0s
+
+---> FINE EPOCA 3 | Val Loss: 0.0914 | MACRO F1: 0.9873 | Weighted F1: 0.9872 | Acc: 0.9871
+*** Nuovo miglior modello salvato con Macro F1: 0.9873 in 'checkpoints/best_baseline_model.pt' ***
+
+
+=== TRAINING COMPLETATO [BASELINE] | Best Macro F1: 0.9873 ===
+============================================================
+FASE 2: ADDESTRAMENTO MODELLO PROPOSTO (FEATURE FUSION BERT)
+============================================================
+=== AVVIO TRAINING [FUSION] SU DEVICE: cuda ===
+1. Inizializzazione tokenizer 'models/bert-base-italian-xxl-cased'...
+2. Caricamento dati da 'wiki-dump/Dataset/train_neural_balanced.csv' e 'wiki-dump/Dataset/val_sentences.csv'...
+-> Train: 200,000 campioni | Val (subsample): 43,530 campioni
+
+--- ESTRAZIONE FEATURE AUSILIARIE (CHAR N-GRAMS + FERTILITY) ---
+Fit Feature Extractor su 200,000 frasi...
+-> Extractor pronto con 938 feature ausiliarie (char=500, edge=300, ortografiche=24, tokenizer=4, marcatori=99, aggregati=11).
+   Copertura marcatori (% frasi con >=1 hit): piemontese=18.2%, lombardo=10.1%, emiliano=12.9%, genovese=10.3%, veneto=13.6%, friulano=38.9%, ladino=33.1%, napoletano=30.9%, tarantino=27.2%, siciliano=26.3%, sardo=49.0%
+-> Feature ausiliarie estratte: dimensione = 938
+-> Estrattore salvato in 'checkpoints/fusion_feature_extractor.joblib'
+
+=== INIZIO ADDESTRAMENTO ===
+  step 200/6250 | avg loss 2.2056 | 7s
+  step 400/6250 | avg loss 1.4113 | 14s
+  step 600/6250 | avg loss 1.0031 | 20s
+  step 800/6250 | avg loss 0.7866 | 27s
+  step 1000/6250 | avg loss 0.6514 | 34s
+  step 1200/6250 | avg loss 0.5593 | 40s
+  step 1400/6250 | avg loss 0.4959 | 47s
+  step 1600/6250 | avg loss 0.4469 | 53s
+  step 1800/6250 | avg loss 0.4102 | 60s
+  step 2000/6250 | avg loss 0.3797 | 67s
+  step 2200/6250 | avg loss 0.3538 | 73s
+  step 2400/6250 | avg loss 0.3325 | 80s
+  step 2600/6250 | avg loss 0.3146 | 86s
+  step 2800/6250 | avg loss 0.2981 | 93s
+  step 3000/6250 | avg loss 0.2841 | 99s
+  step 3200/6250 | avg loss 0.2718 | 106s
+  step 3400/6250 | avg loss 0.2615 | 113s
+  step 3600/6250 | avg loss 0.2515 | 119s
+  step 3800/6250 | avg loss 0.2425 | 126s
+  step 4000/6250 | avg loss 0.2338 | 132s
+  step 4200/6250 | avg loss 0.2266 | 139s
+  step 4400/6250 | avg loss 0.2200 | 146s
+  step 4600/6250 | avg loss 0.2140 | 152s
+  step 4800/6250 | avg loss 0.2084 | 159s
+  step 5000/6250 | avg loss 0.2030 | 165s
+  step 5200/6250 | avg loss 0.1977 | 172s
+  step 5400/6250 | avg loss 0.1930 | 178s
+  step 5600/6250 | avg loss 0.1886 | 185s
+  step 5800/6250 | avg loss 0.1844 | 192s
+  step 6000/6250 | avg loss 0.1805 | 198s
+  step 6200/6250 | avg loss 0.1769 | 205s
+  step 6250/6250 | avg loss 0.1759 | 206s
+Epoch 1/3 | Train Loss: 0.1759 | Tempo: 206.4s
+
+---> FINE EPOCA 1 | Val Loss: 0.0923 | MACRO F1: 0.9841 | Weighted F1: 0.9839 | Acc: 0.9839
+*** Nuovo miglior modello salvato con Macro F1: 0.9841 in 'checkpoints/best_fusion_model.pt' ***
+
+  step 200/6250 | avg loss 0.0524 | 7s
+  step 400/6250 | avg loss 0.0458 | 13s
+  step 600/6250 | avg loss 0.0429 | 20s
+  step 800/6250 | avg loss 0.0421 | 27s
+  step 1000/6250 | avg loss 0.0444 | 33s
+  step 1200/6250 | avg loss 0.0468 | 40s
+  step 1400/6250 | avg loss 0.0462 | 46s
+  step 1600/6250 | avg loss 0.0463 | 53s
+  step 1800/6250 | avg loss 0.0462 | 60s
+  step 2000/6250 | avg loss 0.0458 | 66s
+  step 2200/6250 | avg loss 0.0463 | 73s
+  step 2400/6250 | avg loss 0.0465 | 79s
+  step 2600/6250 | avg loss 0.0470 | 86s
+  step 2800/6250 | avg loss 0.0472 | 93s
+  step 3000/6250 | avg loss 0.0467 | 99s
+  step 3200/6250 | avg loss 0.0469 | 106s
+  step 3400/6250 | avg loss 0.0470 | 112s
+  step 3600/6250 | avg loss 0.0472 | 119s
+  step 3800/6250 | avg loss 0.0472 | 126s
+  step 4000/6250 | avg loss 0.0475 | 132s
+  step 4200/6250 | avg loss 0.0475 | 139s
+  step 4400/6250 | avg loss 0.0471 | 145s
+  step 4600/6250 | avg loss 0.0472 | 152s
+  step 4800/6250 | avg loss 0.0474 | 158s
+  step 5000/6250 | avg loss 0.0472 | 165s
+  step 5200/6250 | avg loss 0.0469 | 172s
+  step 5400/6250 | avg loss 0.0466 | 178s
+  step 5600/6250 | avg loss 0.0463 | 185s
+  step 5800/6250 | avg loss 0.0463 | 191s
+  step 6000/6250 | avg loss 0.0464 | 198s
+  step 6200/6250 | avg loss 0.0463 | 204s
+  step 6250/6250 | avg loss 0.0463 | 206s
+Epoch 2/3 | Train Loss: 0.0463 | Tempo: 205.9s
+
+---> FINE EPOCA 2 | Val Loss: 0.0837 | MACRO F1: 0.9860 | Weighted F1: 0.9862 | Acc: 0.9862
+*** Nuovo miglior modello salvato con Macro F1: 0.9860 in 'checkpoints/best_fusion_model.pt' ***
+
+  step 200/6250 | avg loss 0.0244 | 7s
+  step 400/6250 | avg loss 0.0247 | 13s
+  step 600/6250 | avg loss 0.0242 | 20s
+  step 800/6250 | avg loss 0.0231 | 27s
+  step 1000/6250 | avg loss 0.0224 | 33s
+  step 1200/6250 | avg loss 0.0226 | 40s
+  step 1400/6250 | avg loss 0.0219 | 46s
+  step 1600/6250 | avg loss 0.0219 | 53s
+  step 1800/6250 | avg loss 0.0227 | 60s
+  step 2000/6250 | avg loss 0.0225 | 66s
+  step 2200/6250 | avg loss 0.0223 | 73s
+  step 2400/6250 | avg loss 0.0223 | 79s
+  step 2600/6250 | avg loss 0.0218 | 86s
+  step 2800/6250 | avg loss 0.0214 | 93s
+  step 3000/6250 | avg loss 0.0212 | 99s
+  step 3200/6250 | avg loss 0.0209 | 106s
+  step 3400/6250 | avg loss 0.0210 | 113s
+  step 3600/6250 | avg loss 0.0211 | 119s
+  step 3800/6250 | avg loss 0.0209 | 126s
+  step 4000/6250 | avg loss 0.0209 | 132s
+  step 4200/6250 | avg loss 0.0211 | 139s
+  step 4400/6250 | avg loss 0.0210 | 146s
+  step 4600/6250 | avg loss 0.0209 | 152s
+  step 4800/6250 | avg loss 0.0208 | 159s
+  step 5000/6250 | avg loss 0.0207 | 166s
+  step 5200/6250 | avg loss 0.0208 | 172s
+  step 5400/6250 | avg loss 0.0204 | 179s
+  step 5600/6250 | avg loss 0.0205 | 185s
+  step 5800/6250 | avg loss 0.0204 | 192s
+  step 6000/6250 | avg loss 0.0201 | 199s
+  step 6200/6250 | avg loss 0.0200 | 205s
+  step 6250/6250 | avg loss 0.0200 | 207s
+Epoch 3/3 | Train Loss: 0.0200 | Tempo: 206.9s
+
+---> FINE EPOCA 3 | Val Loss: 0.0905 | MACRO F1: 0.9876 | Weighted F1: 0.9876 | Acc: 0.9876
+*** Nuovo miglior modello salvato con Macro F1: 0.9876 in 'checkpoints/best_fusion_model.pt' ***
+
+
+=== TRAINING COMPLETATO [FUSION] | Best Macro F1: 0.9876 ===
+=== TUTTI GLI ADDESTRAMENTI SONO STATI COMPLETATI CON SUCCESSO ===
+Data fine: Thu Oct 29 01:14:33 GMT 2026

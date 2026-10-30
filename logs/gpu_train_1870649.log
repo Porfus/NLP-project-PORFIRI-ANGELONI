@@ -1,0 +1,36 @@
+=== ESECUZIONE JOB GPU SU CLUSTER ===
+Nodo assegnato: gpu-5
+Data avvio: Thu Oct 29 00:14:26 GMT 2026
+==========================================================
+Job avviato su: gpu-5
+Data e ora:     Thu Oct 29 00:14:26 GMT 2026
+Python in uso:  /hpchome/luca26/nlp_env/bin/python3
+==========================================================
+Thu Oct 29 00:14:26 2026       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.309.01             Driver Version: 535.309.01   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA A100-PCIE-40GB          On  | 00000000:65:00.0 Off |                    0 |
+| N/A   29C    P0              35W / 250W |      0MiB / 40960MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+|   1  NVIDIA A100-PCIE-40GB          On  | 00000000:B1:00.0 Off |                    0 |
+| N/A   29C    P0              33W / 250W |      0MiB / 40960MiB |      0%      Default |
+|                                         |                      |             Disabled |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+CUDA disponibile in PyTorch: False
+Nome GPU: NESSUNA GPU RILEVATA
+==========================================================
+Directory models/bert-base-italian-xxl-cased non trovata. Esegui prima 'python download_model_cache.py' sul login node!

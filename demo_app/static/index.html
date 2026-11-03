@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neuro-Symbolic Italian Dialect Identification — Working Demonstration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+  <!-- Top Academic Header -->
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <div class="brand">
+        <div class="brand-kicker">REYKJAVIK UNIVERSITY · SCHOOL OF COMPUTER SCIENCE · NLP FINAL PROJECT</div>
+        <h1 class="brand-title">Neuro-Symbolic Italian Dialect Identification <span class="serif-italic">&amp;
+            Code-Switching</span></h1>
+      </div>
+      <div class="topbar-meta">
+        <div class="meta-pill">
+          <!-- <span class="status-dot" id="deviceDot"></span> -->
+          <span id="deviceLabel">Initializing Engine…</span>
+        </div>
+        <!-- <div class="meta-stat">
+          <span class="meta-val">12</span>
+          <span class="meta-lbl">Varieties</span>
+        </div>
+        <div class="meta-stat">
+          <span class="meta-val">938</span>
+          <span class="meta-lbl">Symbolic Features</span>
+        </div>
+        <div class="meta-stat">
+          <span class="meta-val">877k</span>
+          <span class="meta-lbl">Test Sentences</span>
+        </div> -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="nav-tabs">
+    <div class="container nav-inner">
+      <button class="tab-btn active" data-tab="arena">
+        <span class="tab-num">01</span> Live Comparison Arena
+      </button>
+      <button class="tab-btn" data-tab="explain">
+        <span class="tab-num">02</span> Explainability &amp; 938 Symbolic Features
+      </button>
+      <button class="tab-btn" data-tab="social">
+        <span class="tab-num">03</span> Social Media Region Explorer <span class="tab-badge"
+          id="socialCountBadge">4,262</span>
+      </button>
+      <button class="tab-btn" data-tab="benchmark">
+        <span class="tab-num">04</span> Methodology &amp; 877k Benchmark
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="container main-content">
+
+    <!-- =====================================================================
+         TAB 1: LIVE COMPARISON ARENA
+         ===================================================================== -->
+    <section id="tab-arena" class="tab-panel active">
+      <div class="section-intro">
+        <div>
+          <h2 class="section-title">Model Comparison Arena</h2>
+          <p class="section-desc">
+          </p>
+        </div>
+      </div>
+
+      <!-- Preset Selector Strip -->
+      <div class="presets-card">
+        <div class="presets-header">
+          <span class="presets-label">CURATED CODE-SWITCHING SAMPLES</span>
+          <span class="presets-hint">Click any sample to run live inference across all 3 models</span>
+        </div>
+        <div class="presets-list" id="presetButtons"></div>
+      </div>
+
+      <!-- Input Composer -->
+      <div class="composer-card">
+        <div class="composer-top">
+          <div class="composer-label-group">
+            <label for="inputText" class="composer-label">INPUT SENTENCE (ITALIAN / DIALECT / CODE-SWITCHING)</label>
+            <div id="activeRegionPill" class="region-context-pill hidden">
+              <span class="region-pin">📍</span>
+              <span>Geolocated Origin: <strong id="activeRegionName"></strong> (<code
+                  id="activeRegionCode"></code>)</span>
+              <button id="clearRegionBtn" class="clear-region-btn" title="Clear region constraint">×</button>
+            </div>
+          </div>
+          <span class="shortcut-hint">Press <kbd>⌘</kbd> + <kbd>Enter</kbd> to analyze</span>
+        </div>
+
+        <textarea id="inputText" rows="2"
+          placeholder="Type or paste a sentence in Italian, regional dialect, or mixed code-switching..."></textarea>
+
+        <!-- <div id="presetNoteBox" class="preset-note hidden"></div> -->
+
+        <div class="composer-footer">
+          <div class="input-metrics" id="inputQuickMetrics">
+            <span>Words: <strong id="metricWords">0</strong></span>
+            <span class="sep">·</span>
+            <span>BERT Subwords: <strong id="metricSubwords">0</strong></span>
+            <span class="sep">·</span>
+            <span>Tokenizer Fertility: <strong id="metricFertility">1.00</strong> pieces/word</span>
+          </div>
+          <div class="composer-actions">
+            <button id="jumpExplainBtn" class="btn-secondary">Inspect Explainability &amp; Features →</button>
+            <button id="analyzeBtn" class="btn-primary">
+              <span id="analyzeBtnText">Run Live Inference</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-Column Model Comparison Grid -->
+      <div class="models-grid" id="modelsGrid">
+        <!-- Populated dynamically by app.js -->
+      </div>
+
+      <!-- Tokenizer Subword Fragmentation Strip -->
+      <div class="card tokenization-card">
+        <div class="card-header-row">
+          <div>
+            <div class="card-kicker">THE TOKENIZATION PENALTY IN ACTION</div>
+            <h3 class="card-title">BERT WordPiece Subword Fragmentation Inspector</h3>
+          </div>
+          <div class="fertility-badge-box">
+            <span class="fertility-lbl">Sentence Fertility Ratio</span>
+            <span class="fertility-val" id="fertilityBadgeVal">1.000</span>
+          </div>
+        </div>
+        <p class="card-subtext">
+          Pre-trained Italian BERT tokenizers split out-of-vocabulary dialectal words into multiple arbitrary subword
+          pieces (highlighted in <span class="inline-tag-amber">amber</span>). Our <strong>Feature Fusion</strong>
+          branch explicitly feeds this fertility signal and subword character morphology into the classifier.
+        </p>
+        <div class="token-strip" id="tokenFragmentationStrip"></div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 2: EXPLAINABILITY & 938 SYMBOLIC FEATURES
+         ===================================================================== -->
+    <section id="tab-explain" class="tab-panel">
+      <div class="section-intro">
+        <div>
+          <h2 class="section-title">Neuro-Symbolic Explainability &amp; Feature Attribution</h2>
+          <p class="section-desc">
+            Inspect word-level saliency attributions (Input × Gradient &amp; SHAP Partition Explainer) alongside the
+            internal activation of the <strong>938 explicit linguistic features</strong> in the auxiliary branch.
+          </p>
+        </div>
+      </div>
+
+      <!-- Current Sentence Banner -->
+      <div class="current-sentence-banner">
+        <div class="cs-left">
+          <span class="cs-kicker">CURRENTLY INSPECTING</span>
+          <p class="cs-text" id="explainCurrentText"></p>
+        </div>
+        <div class="cs-right">
+          <span class="cs-pred-label">Feature Fusion Target</span>
+          <span class="cs-pred-badge" id="explainTargetBadge"></span>
+        </div>
+      </div>
+
+      <!-- Live Token-Level Attribution Comparison -->
+      <div class="explain-two-col">
+        <div class="card">
+          <div class="card-kicker">PROPOSED TRANSFORMER + FEATURE FUTION MODEL</div>
+          <h3 class="card-title">Feature Fusion BERT XXL — Token Attribution</h3>
+          <p class="card-subtext">
+            Signed Input × Gradient attribution toward predicted class. <span class="legend-pos">■ Emerald</span> pushes
+            toward target dialect; <span class="legend-neg">■ Rose</span> pushes toward Standard Italian.
+          </p>
+          <div class="highlighted-sentence-box" id="attrFusionBox"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-kicker">PURE NEURAL BASELINE</div>
+          <h3 class="card-title">Baseline BERT XXL — Token Attribution</h3>
+          <p class="card-subtext">
+            Notice how pure BERT often spreads attribution across standard Italian words or misinterprets fragmented
+            dialect tokens without symbolic guidance.
+          </p>
+          <div class="highlighted-sentence-box" id="attrBaseBox"></div>
+        </div>
+      </div>
+
+      <!-- Auxiliary Symbolic Branch Inspector (938 Features) -->
+      <div class="explain-two-col-asymmetric">
+        <div class="card">
+          <div class="card-header-row">
+            <div>
+              <div class="card-kicker">INTERNAL AUXILIARY BRANCH INSPECTION (938 → 128-D)</div>
+              <h3 class="card-title">Top-15 Activated Symbolic Features by Projected Impact</h3>
+            </div>
+          </div>
+          <p class="card-subtext">
+            Computed directly from <code>model_fusion.aux_projector[0].weight</code>: $\text{Impact}_i = z_i \cdot
+            \frac{1}{128}\sum_{j=1}^{128} |W_{j,i}|$.
+          </p>
+          <div id="auxFeaturesChart" class="aux-bars-container"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-kicker">LINGUISTIC SHIBBOLETH DETECTORS</div>
+          <h3 class="card-title">Active Dialect Regex &amp; Structural Signals</h3>
+          <p class="card-subtext">
+            Explicit morphological &amp; lexical regex patterns (out of 99 curated dialect markers across 11 dialects)
+            triggered by the current sentence:
+          </p>
+          <div id="activeMarkersList" class="markers-list"></div>
+
+          <hr class="subtle-divider" />
+          <div class="card-kicker">938-FEATURE ARCHITECTURE BREAKDOWN</div>
+          <div class="feature-blocks-mini" id="featureBlocksMini"></div>
+        </div>
+      </div>
+
+      <!-- Exact GPU SHAP Partition Explainer Reports from Notebook -->
+      <div class="card">
+        <div class="card-header-row">
+          <div>
+            <div class="card-kicker">EXACT SHAPLEY VALUES (GPU PARTITION EXPLAINER)</div>
+            <h3 class="card-title">SHAP Text Masking Comparison (Baseline BERT vs Feature Fusion BERT)</h3>
+          </div>
+          <div class="shap-Case-pill">Case: <em>"Stamattina stavo andando a lavoro ma nun se po fa niente con sto
+              traffico"</em> (Target: <code>nap</code>)</div>
+        </div>
+        <p class="card-subtext">
+          Pre-computed on NVIDIA A100 GPU via <code>shap.Explainer(model, shap.maskers.Text(tokenizer))</code> in
+          <code>executed_interpretability_and_codeswitching.ipynb</code>.
+        </p>
+        <div class="shap-comparison-grid">
+          <div class="shap-pane">
+            <h4 class="shap-pane-title">Baseline BERT XXL (Pure)</h4>
+            <div id="shapBaseContainer" class="shap-embed-box"></div>
+          </div>
+          <div class="shap-pane">
+            <h4 class="shap-pane-title">Feature Fusion BERT XXL (Proposed)</h4>
+            <div id="shapFusionContainer" class="shap-embed-box"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 3: SOCIAL MEDIA REGION EXPLORER
+         ===================================================================== -->
+    <section id="tab-social" class="tab-panel">
+      <div class="section-intro">
+        <div>
+          <h2 class="section-title">Out-of-Domain Social Media Region Explorer</h2>
+          <p class="section-desc">
+            Explore <strong>4,262 real geolocated social media posts</strong>
+            (<code>Social_media_posts/clean.csv</code>) filtered for regional expressions and code-switching. Compare
+            the <strong>Geolocated Region of Origin</strong> against the dialect predicted by our three models.
+          </p>
+        </div>
+      </div>
+
+      <!-- Filter & Batch Evaluation Bar -->
+      <div class="social-controls-card">
+        <div class="social-filters">
+          <div class="control-group">
+            <label for="regionSelect" class="control-label">FILTER BY GEOLOCATED ITALIAN REGION</label>
+            <select id="regionSelect" class="select-input"></select>
+          </div>
+          <div class="control-group search-group">
+            <label for="socialSearchInput" class="control-label">SEARCH TEXT OR CITY (E.G. 'NUN', 'XE', 'MINGA',
+              'NAPOLI')</label>
+            <input type="text" id="socialSearchInput" class="text-input" placeholder="Search keywords or city..." />
+          </div>
+        </div>
+        <div class="social-actions">
+          <button id="batchEvalBtn" class="btn-primary">Run Live Predictions on Visible Posts</button>
+        </div>
+      </div>
+
+      <!-- Social Posts Table -->
+      <div class="card table-card">
+        <div class="table-meta-bar">
+          <span id="socialShowingText">Showing posts...</span>
+          <div class="pagination-btns">
+            <button id="prevPageBtn" class="btn-page" disabled>← Previous</button>
+            <button id="nextPageBtn" class="btn-page">Next →</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 170px;">Geolocated Region</th>
+                <th style="width: 110px;">Target Dialect</th>
+                <th>Social Media Post (Real-World Code-Switching)</th>
+                <th style="width: 220px;">Live 3-Model Prediction</th>
+                <th style="width: 130px; text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="socialTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================================
+         TAB 4: METHODOLOGY & 877K BENCHMARK
+         ===================================================================== -->
+    <section id="tab-benchmark" class="tab-panel">
+      <div class="section-intro">
+        <div>
+          <h2 class="section-title">Methodology, Architecture &amp; Official 877k Benchmark</h2>
+          <p class="section-desc">
+            Complete experimental summary for our 12-way Italian Dialect Identification system trained on 200,000
+            temperature-sampled sentences and evaluated on <strong>877,048 official test sentences</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Research Question Banner -->
+      <div class="rq-card">
+        <div class="rq-kicker">RESEARCH QUESTION &amp; MOTIVATION (VARDIAL 2022 / NAACL 2024)</div>
+        <p class="rq-quote">
+          “Can the explicit integration of sub-word morphological, orthographic, and lexical shibboleth features into
+          pre-trained Transformer representations mitigate the <strong>Tokenization Penalty</strong> and improve both
+          accuracy and robustness under real-world Italian–Dialect code-switching?”
+        </p>
+      </div>
+
+      <!-- Official Benchmark Results Table (877,048 Test Split) -->
+      <div class="card">
+        <div class="card-header-row">
+          <div>
+            <div class="card-kicker">OFFICIAL IN-DOMAIN EVALUATION (CHECKPOINTS/BENCHMARK_SUMMARY.CSV)</div>
+            <h3 class="card-title">Comparative Performance on Official Test Split (877,048 Sentences)</h3>
+          </div>
+          <span class="gpu-pill">Evaluated on NVIDIA A100-PCIE-40GB</span>
+        </div>
+
+        <div class="benchmark-cards-row" id="benchmarkCardsRow"></div>
+
+        <div class="table-responsive" style="margin-top: 1.25rem;">
+          <table class="data-table benchmark-table">
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>Feature Representation</th>
+                <th>Val Macro F1 (873k)</th>
+                <th>Test Macro F1 (877k)</th>
+                <th>Test Weighted F1</th>
+                <th>Test Accuracy</th>
+                <th>Inference Time</th>
+              </tr>
+            </thead>
+            <tbody id="benchmarkTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Neuro-Symbolic Architecture Diagram -->
+      <div class="card">
+        <div class="card-kicker">SYSTEM ARCHITECTURE</div>
+        <h3 class="card-title">DialectFeatureFusionBERT: Dual-Branch Neuro-Symbolic Fusion</h3>
+        <div class="arch-diagram">
+          <div class="arch-col">
+            <div class="arch-node arch-input">
+              <div class="arch-node-title">Input Sentence</div>
+              <div class="arch-node-sub">NFC Normalized · Cased Text</div>
+            </div>
+          </div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-col arch-branches">
+            <div class="arch-node arch-neural">
+              <div class="arch-badge">Neural Branch (LR = 2e-5)</div>
+              <div class="arch-node-title">BERT Base Italian XXL Cased</div>
+              <div class="arch-node-sub">12 Transformer Layers · Contextual <code>[CLS]</code> Pooling →
+                <strong>768-d</strong>
+              </div>
+            </div>
+            <div class="arch-node arch-symbolic">
+              <div class="arch-badge">Symbolic Branch (LR = 1e-3)</div>
+              <div class="arch-node-title">938 Explicit Linguistic Features</div>
+              <div class="arch-node-sub">500 Char N-Grams · 300 Word-Edges · 99 Regex Markers · 24 Ortho · 4 Fertility
+              </div>
+              <div class="arch-node-proj">Linear(938 → 128) + BatchNorm1d + ReLU + Dropout(0.2) → <strong>128-d</strong>
+              </div>
+            </div>
+          </div>
+          <div class="arch-arrow">⊕</div>
+          <div class="arch-col">
+            <div class="arch-node arch-fusion">
+              <div class="arch-node-title">Concatenation &amp; MLP Classifier</div>
+              <div class="arch-node-sub">Fused Vector: <strong>896-d</strong> (768 + 128)<br />Linear(896 → 256) + ReLU
+                + Linear(256 → 12)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two-Stage Temperature Sampling & Confusion Matrix Figures -->
+      <div class="explain-two-col">
+        <div class="card">
+          <div class="card-kicker">DATA BALANCING METHODOLOGY (PREPARE_NEURAL_DATASET.PY)</div>
+          <h3 class="card-title">Two-Stage Temperature Sampling ($\alpha = 0.5$, 200k Unique Sentences)</h3>
+          <p class="card-subtext">
+            Standard Italian originally dominated 89.7% (3.66M) of the corpus. By capping <code>it</code> at 150k and
+            applying power-law smoothing $p_i \propto N_i^{0.5}$, <strong>83.5% of GPU gradients focus on the 11
+              dialects</strong> with zero duplicate sentences.
+          </p>
+          <div class="figure-box">
+            <img src="/assets/temperature_sampling.png" alt="Two-Stage Temperature Sampling Analysis"
+              class="report-img" />
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-kicker">ERROR ANALYSIS &amp; DIALECT DISCRIMINATION</div>
+          <h3 class="card-title">Normalized Confusion Matrix &amp; Per-Variety F1</h3>
+          <p class="card-subtext">
+            Normalized recall across all 12 varieties alongside validation precision, recall, and F1-scores per language
+            code.
+          </p>
+          <div class="figure-box">
+            <img src="/assets/cm_baseline_logreg.png" alt="Normalized Confusion Matrix" class="report-img cm-img" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 12 Dialects Reference Grid -->
+      <div class="card">
+        <div class="card-kicker">TARGET TAXONOMY</div>
+        <h3 class="card-title">The 12 Italian Linguistic Varieties &amp; Dialect Marker Coverage</h3>
+        <div class="dialects-ref-grid" id="dialectsRefGrid"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <span>Natural Language Processing (Fall 2026) · Final Project Working Demonstration</span>
+      <span>Models: <code>LogisticRegression</code> · <code>BaselineBERT</code> ·
+        <code>DialectFeatureFusionBERT</code></span>
+    </div>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+
+</html>

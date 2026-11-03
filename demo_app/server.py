@@ -9,6 +9,7 @@ Serves a minimal, academic UI and live inference APIs for all 3 trained models:
 
 import csv
 import json
+import importlib
 import os
 import re
 import sys
@@ -29,7 +30,7 @@ if SRC_DIR not in sys.path:
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from transformers import BertConfig, BertModel
+from transformers import AutoTokenizer, BertConfig, BertModel
 
 from dataset import DIALECT_CLASSES, ID2LABEL, LABEL2ID
 from feature_extraction import _WORD_RE, normalize_text
@@ -170,7 +171,7 @@ REGION_NORMALIZATION = {
 PRESET_EXAMPLES = [
     {
         "id": "cs_nap_1",
-        "title": "Code-Switching: Italian + Neapolitan (Misclassified by Baseline BERT)",
+        "title": "Code-Switching: Italian + Neapolitan",
         "text": "Andrea che non voleva alzarsi e fa teng na mutanda bianca",
         "region": "Campania",
         "expected_dialect": "nap",
@@ -298,48 +299,76 @@ class DemoModelEngine:
         # 2. Load Auxiliary Symbolic Feature Extractor (includes Cased BERT Tokenizer)
         ext_path = os.path.join(PROJECT_ROOT, "checkpoints", "fusion_feature_extractor.joblib")
         print(f"[Engine] Loading Symbolic Feature Extractor (938 features) from {ext_path}...")
-        self.extractor = joblib.load(ext_path)
-        self.tokenizer = self.extractor.tokenizer
+        try:
+            self.extractor = joblib.load(ext_path)
+        except ModuleNotFoundError as exc:
+            legacy_module = "transformers.models.bert.tokenization_bert_fast"
+            if exc.name != legacy_module:
+                raise
+            current_module = importlib.import_module(
+                "transformers.models.bert.tokenization_bert"
+            )
+            sys.modules[legacy_module] = current_module
+            self.extractor = joblib.load(ext_path)
+        tokenizer_path = os.path.join(PROJECT_ROOT, "models", "bert-base-italian-xxl-cased")
+        self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path, use_fast=True)
+        if self.tokenizer.pad_token_id is None:
+            self.tokenizer.add_special_tokens({"pad_token": "[PAD]"})
+        if self.tokenizer.pad_token_id != 0:
+            raise ValueError(
+                f"Expected tokenizer padding ID 0 for the saved BERT checkpoints, "
+                f"got {self.tokenizer.pad_token_id}."
+            )
         self.aux_dim = self.extractor.n_features_
         self.feature_names = self.extractor.get_feature_names_out()
 
-        # 3. Build BertConfig matching dbmdz/bert-base-italian-xxl-cased
+        # Checkpoint weights define the exact vocabulary size. Some tokenizer
+        # versions report a smaller base vocabulary despite added tokens.
+        base_pt = os.path.join(PROJECT_ROOT, "checkpoints", "best_baseline_model.pt")
+        fusion_pt = os.path.join(PROJECT_ROOT, "checkpoints", "best_fusion_model.pt")
+        sd_base = torch.load(base_pt, map_location="cpu", weights_only=False)
+        sd_fusion = torch.load(fusion_pt, map_location="cpu", weights_only=False)
+        embedding_key = "encoder.embeddings.word_embeddings.weight"
+        base_vocab_size = sd_base[embedding_key].shape[0]
+        fusion_vocab_size = sd_fusion[embedding_key].shape[0]
+        if base_vocab_size != fusion_vocab_size:
+            raise ValueError(
+                "Baseline and fusion checkpoints have different vocabulary sizes: "
+                f"{base_vocab_size} and {fusion_vocab_size}."
+            )
+
+        # 3. Build BertConfig matching the saved model weights.
         bert_config = BertConfig(
-            vocab_size=self.tokenizer.vocab_size,
+            vocab_size=base_vocab_size,
             hidden_size=768,
             num_hidden_layers=12,
             num_attention_heads=12,
             intermediate_size=3072,
             max_position_embeddings=512,
             type_vocab_size=2,
-            pad_token_id=self.tokenizer.pad_token_id or 0,
+            pad_token_id=self.tokenizer.pad_token_id,
             layer_norm_eps=1e-12,
         )
 
         # 4. Load Baseline 2: Baseline BERT XXL
-        base_pt = os.path.join(PROJECT_ROOT, "checkpoints", "best_baseline_model.pt")
         print(f"[Engine] Loading Baseline BERT XXL from {base_pt}...")
         self.model_base = OfflineBaselineBERT(bert_config, num_classes=len(DIALECT_CLASSES))
-        sd_base = torch.load(base_pt, map_location="cpu", weights_only=False)
         self.model_base.load_state_dict(sd_base, strict=False)
         self.model_base.to(self.device).eval()
 
         # 5. Load Proposed Model: Feature Fusion BERT XXL
-        fusion_pt = os.path.join(PROJECT_ROOT, "checkpoints", "best_fusion_model.pt")
         print(f"[Engine] Loading Feature Fusion BERT XXL from {fusion_pt}...")
         self.model_fusion = OfflineDialectFeatureFusionBERT(
             bert_config, num_classes=len(DIALECT_CLASSES), aux_dim=self.aux_dim
         )
-        sd_fusion = torch.load(fusion_pt, map_location="cpu", weights_only=False)
         self.model_fusion.load_state_dict(sd_fusion, strict=False)
         self.model_fusion.to(self.device).eval()
 
         # Precompute projection weight matrix for fast auxiliary inspection
         self.proj_weight = self.model_fusion.aux_projector[0].weight.detach().cpu().numpy()  # (128, 938)
 
-        # 6. Load Social Media Dataset & Precomputed SHAP HTML
+        # 6. Load Social Media Dataset
         self.social_posts = self._load_social_posts()
-        self.shap_reports = self._load_shap_from_notebook()
         self.benchmark_data = self._load_benchmark_data()
 
         print(f"[Engine] All 3 models and datasets ready in {time.time() - t0:.2f}s!")
@@ -368,33 +397,6 @@ class DemoModelEngine:
                     "expected_dialect": exp_dial,
                 })
         return posts
-
-    def _load_shap_from_notebook(self):
-        nb_path = os.path.join(PROJECT_ROOT, "executed_interpretability_and_codeswitching.ipynb")
-        reports = {"fusion_cases": "", "comparison_base": "", "comparison_fusion": ""}
-        if not os.path.exists(nb_path):
-            return reports
-        try:
-            with open(nb_path, encoding="utf-8") as f:
-                nb = json.load(f)
-            # Cell 8 has SHAP on case 0
-            if len(nb.get("cells", [])) > 8:
-                for out in nb["cells"][8].get("outputs", []):
-                    if "data" in out and "text/html" in out["data"]:
-                        reports["fusion_cases"] = "".join(out["data"]["text/html"])
-            # Cell 10 has Baseline vs Fusion SHAP on case 1
-            if len(nb.get("cells", [])) > 10:
-                html_blocks = []
-                for out in nb["cells"][10].get("outputs", []):
-                    if "data" in out and "text/html" in out["data"]:
-                        html_blocks.append("".join(out["data"]["text/html"]))
-                if len(html_blocks) >= 1:
-                    reports["comparison_base"] = html_blocks[0]
-                if len(html_blocks) >= 2:
-                    reports["comparison_fusion"] = html_blocks[1]
-        except Exception as e:
-            print(f"[Engine] Warning loading SHAP HTML: {e}")
-        return reports
 
     def _load_benchmark_data(self):
         return {
@@ -806,7 +808,6 @@ class DemoRequestHandler(SimpleHTTPRequestHandler):
                 "dialects": DIALECT_META,
                 "presets": PRESET_EXAMPLES,
                 "benchmark": ENGINE.benchmark_data,
-                "shap_html": ENGINE.shap_reports,
                 "social_regions": regions_sorted,
                 "total_social_posts": len(ENGINE.social_posts),
             })
@@ -834,14 +835,6 @@ class DemoRequestHandler(SimpleHTTPRequestHandler):
                 "limit": limit,
                 "posts": slice_posts,
             })
-            return
-
-        if path == "/assets/temperature_sampling.png":
-            self._send_file_from_project("results/temperature_sampling_analysis.png", "image/png")
-            return
-
-        if path == "/assets/cm_baseline_logreg.png":
-            self._send_file_from_project("checkpoints/cm_baseline_logreg.png", "image/png")
             return
 
         return super().do_GET()

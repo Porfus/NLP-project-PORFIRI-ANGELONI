@@ -67,14 +67,6 @@ async function initializeApp() {
     // Render Benchmark & Methodology Tab
     renderBenchmarkTab(data.benchmark, data.dialects);
 
-    // Render SHAP Embeds
-    if (data.shap_html) {
-      document.getElementById("shapBaseContainer").innerHTML =
-        data.shap_html.comparison_base || "<em>SHAP report not found</em>";
-      document.getElementById("shapFusionContainer").innerHTML =
-        data.shap_html.comparison_fusion || "<em>SHAP report not found</em>";
-    }
-
     // Populate Social Region Filter
     populateSocialRegions(data.social_regions, data.dialects);
     await loadSocialPosts();
@@ -85,7 +77,7 @@ async function initializeApp() {
     }
   } catch (err) {
     console.error("Initialization error:", err);
-    document.getElementById("deviceLabel").textContent = "Server Connection Error";
+    document.getElementById("deviceLabel").textContent = "Engine unavailable";
   }
 }
 

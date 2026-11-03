@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="/style.css" />
 </head>
@@ -18,9 +18,7 @@
   <header class="topbar">
     <div class="container topbar-inner">
       <div class="brand">
-        <div class="brand-kicker">REYKJAVIK UNIVERSITY · SCHOOL OF COMPUTER SCIENCE · NLP FINAL PROJECT</div>
-        <h1 class="brand-title">Neuro-Symbolic Italian Dialect Identification <span class="serif-italic">&amp;
-            Code-Switching</span></h1>
+        <h1 class="brand-title">Neuro-Symbolic Italian Dialect Identification &amp; Code-Switching</h1>
       </div>
       <div class="topbar-meta">
         <div class="meta-pill">
@@ -157,7 +155,7 @@
         <div>
           <h2 class="section-title">Neuro-Symbolic Explainability &amp; Feature Attribution</h2>
           <p class="section-desc">
-            Inspect word-level saliency attributions (Input × Gradient &amp; SHAP Partition Explainer) alongside the
+            Inspect word-level saliency attributions (Input × Gradient) alongside the
             internal activation of the <strong>938 explicit linguistic features</strong> in the auxiliary branch.
           </p>
         </div>
@@ -229,31 +227,6 @@
         </div>
       </div>
 
-      <!-- Exact GPU SHAP Partition Explainer Reports from Notebook -->
-      <div class="card">
-        <div class="card-header-row">
-          <div>
-            <div class="card-kicker">EXACT SHAPLEY VALUES (GPU PARTITION EXPLAINER)</div>
-            <h3 class="card-title">SHAP Text Masking Comparison (Baseline BERT vs Feature Fusion BERT)</h3>
-          </div>
-          <div class="shap-Case-pill">Case: <em>"Stamattina stavo andando a lavoro ma nun se po fa niente con sto
-              traffico"</em> (Target: <code>nap</code>)</div>
-        </div>
-        <p class="card-subtext">
-          Pre-computed on NVIDIA A100 GPU via <code>shap.Explainer(model, shap.maskers.Text(tokenizer))</code> in
-          <code>executed_interpretability_and_codeswitching.ipynb</code>.
-        </p>
-        <div class="shap-comparison-grid">
-          <div class="shap-pane">
-            <h4 class="shap-pane-title">Baseline BERT XXL (Pure)</h4>
-            <div id="shapBaseContainer" class="shap-embed-box"></div>
-          </div>
-          <div class="shap-pane">
-            <h4 class="shap-pane-title">Feature Fusion BERT XXL (Proposed)</h4>
-            <div id="shapFusionContainer" class="shap-embed-box"></div>
-          </div>
-        </div>
-      </div>
     </section>
 
     <!-- =====================================================================
@@ -329,15 +302,6 @@
         </div>
       </div>
 
-      <!-- Research Question Banner -->
-      <div class="rq-card">
-        <div class="rq-kicker">RESEARCH QUESTION &amp; MOTIVATION (VARDIAL 2022 / NAACL 2024)</div>
-        <p class="rq-quote">
-          “Can the explicit integration of sub-word morphological, orthographic, and lexical shibboleth features into
-          pre-trained Transformer representations mitigate the <strong>Tokenization Penalty</strong> and improve both
-          accuracy and robustness under real-world Italian–Dialect code-switching?”
-        </p>
-      </div>
 
       <!-- Official Benchmark Results Table (877,048 Test Split) -->
       <div class="card">
@@ -409,34 +373,6 @@
         </div>
       </div>
 
-      <!-- Two-Stage Temperature Sampling & Confusion Matrix Figures -->
-      <div class="explain-two-col">
-        <div class="card">
-          <div class="card-kicker">DATA BALANCING METHODOLOGY (PREPARE_NEURAL_DATASET.PY)</div>
-          <h3 class="card-title">Two-Stage Temperature Sampling ($\alpha = 0.5$, 200k Unique Sentences)</h3>
-          <p class="card-subtext">
-            Standard Italian originally dominated 89.7% (3.66M) of the corpus. By capping <code>it</code> at 150k and
-            applying power-law smoothing $p_i \propto N_i^{0.5}$, <strong>83.5% of GPU gradients focus on the 11
-              dialects</strong> with zero duplicate sentences.
-          </p>
-          <div class="figure-box">
-            <img src="/assets/temperature_sampling.png" alt="Two-Stage Temperature Sampling Analysis"
-              class="report-img" />
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-kicker">ERROR ANALYSIS &amp; DIALECT DISCRIMINATION</div>
-          <h3 class="card-title">Normalized Confusion Matrix &amp; Per-Variety F1</h3>
-          <p class="card-subtext">
-            Normalized recall across all 12 varieties alongside validation precision, recall, and F1-scores per language
-            code.
-          </p>
-          <div class="figure-box">
-            <img src="/assets/cm_baseline_logreg.png" alt="Normalized Confusion Matrix" class="report-img cm-img" />
-          </div>
-        </div>
-      </div>
 
       <!-- 12 Dialects Reference Grid -->
       <div class="card">

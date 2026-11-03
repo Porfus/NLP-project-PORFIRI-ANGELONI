@@ -1,2 +1,8 @@
-#external files
+/paper
+/logs
+/.venv
+/Social_media_posts
+executed_dialects_dump.ipynb
+executed_interpretability_and_codeswitching.ipynb
+temperature_sampling_analysis.png
 pyproject.toml

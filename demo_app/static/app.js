@@ -57,6 +57,8 @@ async function initializeApp() {
       devMap[data.device] || `Device: ${data.device}`;
     document.getElementById("socialCountBadge").textContent =
       data.total_social_posts.toLocaleString();
+    document.getElementById("socialTotalLabel").textContent =
+      data.total_social_posts.toLocaleString();
 
     // Render Presets
     renderPresetButtons(data.presets);
@@ -143,6 +145,8 @@ function setupComposerEvents() {
     // Deselect preset highlight if user edits text manually
     document.querySelectorAll(".preset-chip").forEach((c) => c.classList.remove("active"));
     document.getElementById("presetNoteBox").classList.add("hidden");
+    document.getElementById("metricWords").textContent =
+      (inputEl.value.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*/gu) || []).length;
   });
 
   document.getElementById("clearRegionBtn").addEventListener("click", () => {
@@ -175,11 +179,18 @@ async function runPrediction() {
 
     renderModelCards(data);
     renderAttributions(data.explainability.attributions_fusion);
+    updateInputMetrics(data.tokenization);
   } catch (err) {
     console.error("Prediction error:", err);
   } finally {
     btnText.textContent = "Run Live Inference";
   }
+}
+
+function updateInputMetrics(tokenization) {
+  document.getElementById("metricWords").textContent = tokenization.num_words;
+  document.getElementById("metricSubwords").textContent = tokenization.num_subwords;
+  document.getElementById("metricFertility").textContent = tokenization.fertility_rate.toFixed(2);
 }
 
 function renderAttributions(words) {
@@ -282,7 +293,8 @@ function renderModelCards(data) {
    ========================================================================= */
 function populateSocialRegions(regions, dialects) {
   const sel = document.getElementById("regionSelect");
-  sel.innerHTML = `<option value="all">All Italian Regions (4,262 Geotagged Posts)</option>`;
+  const totalPosts = STATE.initData?.total_social_posts ?? 0;
+  sel.innerHTML = `<option value="all">All Italian Regions (${totalPosts.toLocaleString()} Geotagged Posts)</option>`;
   regions.forEach((r) => {
     const dMeta = dialects[r.expected_dialect] || { name: r.expected_dialect };
     const opt = document.createElement("option");

@@ -47,15 +47,12 @@
       <button class="tab-btn active" data-tab="arena">
         <span class="tab-num">01</span> Live Comparison Arena
       </button>
-      <button class="tab-btn" data-tab="explain">
-        <span class="tab-num">02</span> Explainability &amp; 938 Symbolic Features
-      </button>
       <button class="tab-btn" data-tab="social">
-        <span class="tab-num">03</span> Social Media Region Explorer <span class="tab-badge"
+        <span class="tab-num">02</span> Social Media Region Explorer <span class="tab-badge"
           id="socialCountBadge">4,262</span>
       </button>
       <button class="tab-btn" data-tab="benchmark">
-        <span class="tab-num">04</span> Methodology &amp; 877k Benchmark
+        <span class="tab-num">03</span> Methodology &amp; 877k Benchmark
       </button>
     </div>
   </nav>
@@ -113,7 +110,6 @@
             <span>Tokenizer Fertility: <strong id="metricFertility">1.00</strong> pieces/word</span>
           </div>
           <div class="composer-actions">
-            <button id="jumpExplainBtn" class="btn-secondary">Inspect Explainability &amp; Features →</button>
             <button id="analyzeBtn" class="btn-primary">
               <span id="analyzeBtnText">Run Live Inference</span>
             </button>
@@ -126,105 +122,18 @@
         <!-- Populated dynamically by app.js -->
       </div>
 
-      <!-- Tokenizer Subword Fragmentation Strip -->
-      <div class="card tokenization-card">
+      <div class="card attribution-card">
         <div class="card-header-row">
           <div>
-            <div class="card-kicker">THE TOKENIZATION PENALTY IN ACTION</div>
-            <h3 class="card-title">BERT WordPiece Subword Fragmentation Inspector</h3>
+            <div class="card-kicker">WORD-LEVEL MODEL ATTRIBUTION</div>
+            <h3 class="card-title">Which Words Push the Prediction?</h3>
           </div>
-          <div class="fertility-badge-box">
-            <span class="fertility-lbl">Sentence Fertility Ratio</span>
-            <span class="fertility-val" id="fertilityBadgeVal">1.000</span>
+          <div class="attribution-legend">
+            <span class="legend-neg">■ Toward Italian</span>
+            <span class="legend-pos">■ Toward dialect</span>
           </div>
         </div>
-        <p class="card-subtext">
-          Pre-trained Italian BERT tokenizers split out-of-vocabulary dialectal words into multiple arbitrary subword
-          pieces (highlighted in <span class="inline-tag-amber">amber</span>). Our <strong>Feature Fusion</strong>
-          branch explicitly feeds this fertility signal and subword character morphology into the classifier.
-        </p>
-        <div class="token-strip" id="tokenFragmentationStrip"></div>
-      </div>
-    </section>
-
-    <!-- =====================================================================
-         TAB 2: EXPLAINABILITY & 938 SYMBOLIC FEATURES
-         ===================================================================== -->
-    <section id="tab-explain" class="tab-panel">
-      <div class="section-intro">
-        <div>
-          <h2 class="section-title">Neuro-Symbolic Explainability &amp; Feature Attribution</h2>
-          <p class="section-desc">
-            Inspect word-level saliency attributions (Input × Gradient) alongside the
-            internal activation of the <strong>938 explicit linguistic features</strong> in the auxiliary branch.
-          </p>
-        </div>
-      </div>
-
-      <!-- Current Sentence Banner -->
-      <div class="current-sentence-banner">
-        <div class="cs-left">
-          <span class="cs-kicker">CURRENTLY INSPECTING</span>
-          <p class="cs-text" id="explainCurrentText"></p>
-        </div>
-        <div class="cs-right">
-          <span class="cs-pred-label">Feature Fusion Target</span>
-          <span class="cs-pred-badge" id="explainTargetBadge"></span>
-        </div>
-      </div>
-
-      <!-- Live Token-Level Attribution Comparison -->
-      <div class="explain-two-col">
-        <div class="card">
-          <div class="card-kicker">PROPOSED TRANSFORMER + FEATURE FUTION MODEL</div>
-          <h3 class="card-title">Feature Fusion BERT XXL — Token Attribution</h3>
-          <p class="card-subtext">
-            Signed Input × Gradient attribution toward predicted class. <span class="legend-pos">■ Emerald</span> pushes
-            toward target dialect; <span class="legend-neg">■ Rose</span> pushes toward Standard Italian.
-          </p>
-          <div class="highlighted-sentence-box" id="attrFusionBox"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-kicker">PURE NEURAL BASELINE</div>
-          <h3 class="card-title">Baseline BERT XXL — Token Attribution</h3>
-          <p class="card-subtext">
-            Notice how pure BERT often spreads attribution across standard Italian words or misinterprets fragmented
-            dialect tokens without symbolic guidance.
-          </p>
-          <div class="highlighted-sentence-box" id="attrBaseBox"></div>
-        </div>
-      </div>
-
-      <!-- Auxiliary Symbolic Branch Inspector (938 Features) -->
-      <div class="explain-two-col-asymmetric">
-        <div class="card">
-          <div class="card-header-row">
-            <div>
-              <div class="card-kicker">INTERNAL AUXILIARY BRANCH INSPECTION (938 → 128-D)</div>
-              <h3 class="card-title">Top-15 Activated Symbolic Features by Projected Impact</h3>
-            </div>
-          </div>
-          <p class="card-subtext">
-            Computed directly from <code>model_fusion.aux_projector[0].weight</code>: $\text{Impact}_i = z_i \cdot
-            \frac{1}{128}\sum_{j=1}^{128} |W_{j,i}|$.
-          </p>
-          <div id="auxFeaturesChart" class="aux-bars-container"></div>
-        </div>
-
-        <div class="card">
-          <div class="card-kicker">LINGUISTIC SHIBBOLETH DETECTORS</div>
-          <h3 class="card-title">Active Dialect Regex &amp; Structural Signals</h3>
-          <p class="card-subtext">
-            Explicit morphological &amp; lexical regex patterns (out of 99 curated dialect markers across 11 dialects)
-            triggered by the current sentence:
-          </p>
-          <div id="activeMarkersList" class="markers-list"></div>
-
-          <hr class="subtle-divider" />
-          <div class="card-kicker">938-FEATURE ARCHITECTURE BREAKDOWN</div>
-          <div class="feature-blocks-mini" id="featureBlocksMini"></div>
-        </div>
+        <div id="attributionSentence" class="highlighted-sentence-box"></div>
       </div>
 
     </section>

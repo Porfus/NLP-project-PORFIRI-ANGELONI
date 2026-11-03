@@ -30,9 +30,6 @@ function setupTabs() {
     });
   });
 
-  document.getElementById("jumpExplainBtn").addEventListener("click", () => {
-    switchTab("explain");
-  });
 }
 
 function switchTab(tabName) {
@@ -177,13 +174,26 @@ async function runPrediction() {
     }
 
     renderModelCards(data);
-    renderTokenFragmentation(data.tokenization);
-    renderExplainabilityTab(data);
+    renderAttributions(data.explainability.attributions_fusion);
   } catch (err) {
     console.error("Prediction error:", err);
   } finally {
     btnText.textContent = "Run Live Inference";
   }
+}
+
+function renderAttributions(words) {
+  const container = document.getElementById("attributionSentence");
+  container.innerHTML = words
+    .map((word) => {
+      const opacity = Math.min(Math.max(Math.abs(word.norm_score) * 0.78, 0.08), 0.78).toFixed(2);
+      const color = word.norm_score >= 0
+        ? `rgba(16, 185, 129, ${opacity})`
+        : `rgba(244, 63, 94, ${opacity})`;
+      const pieces = word.subwords.join(" + ");
+      return `<span class="attr-word" style="background: ${color};" title="Subwords: [${escapeHtml(pieces)}] | Score: ${word.score}">${escapeHtml(word.word)}</span>`;
+    })
+    .join(" ");
 }
 
 function renderModelCards(data) {
@@ -265,99 +275,6 @@ function renderModelCards(data) {
       `;
     })
     .join("");
-}
-
-function renderTokenFragmentation(tok) {
-  document.getElementById("metricWords").textContent = tok.num_words;
-  document.getElementById("metricSubwords").textContent = tok.num_subwords;
-  document.getElementById("metricFertility").textContent = tok.fertility_rate.toFixed(2);
-  document.getElementById("fertilityBadgeVal").textContent = `${tok.fertility_rate.toFixed(3)} (${tok.num_subwords}/${tok.num_words})`;
-
-  const strip = document.getElementById("tokenFragmentationStrip");
-  strip.innerHTML = tok.words
-    .map((w) => {
-      const piecesHtml = w.pieces
-        .map((p) => `<span class="subword-pill">${escapeHtml(p)}</span>`)
-        .join("");
-      return `
-        <div class="word-tok-chip ${w.is_fragmented ? "fragmented" : ""}">
-          <span class="word-surface">${escapeHtml(w.word)}</span>
-          <div class="word-pieces">${piecesHtml}</div>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderExplainabilityTab(data) {
-  const exp = data.explainability;
-  document.getElementById("explainCurrentText").textContent = `"${data.text}"`;
-  const badge = document.getElementById("explainTargetBadge");
-  badge.textContent = `${exp.target_dialect.code.toUpperCase()} · ${exp.target_dialect.name}`;
-  badge.style.background = exp.target_dialect.color;
-
-  // Render Word Attribution Boxes
-  document.getElementById("attrFusionBox").innerHTML = renderWordAttributionsHtml(
-    exp.attributions_fusion
-  );
-  document.getElementById("attrBaseBox").innerHTML = renderWordAttributionsHtml(
-    exp.attributions_baseline
-  );
-
-  // Render Top-15 Symbolic Features
-  const auxContainer = document.getElementById("auxFeaturesChart");
-  const maxImpact = Math.max(
-    ...exp.top_symbolic_features.map((f) => Math.abs(f.projected_impact)),
-    0.01
-  );
-
-  auxContainer.innerHTML = exp.top_symbolic_features
-    .map((f) => {
-      const pct = Math.min((Math.abs(f.projected_impact) / maxImpact) * 100, 100);
-      const isPos = f.projected_impact >= 0;
-      const barColor = isPos ? "#0D9488" : "#E11D48";
-      return `
-        <div class="aux-bar-row" title="Raw Feature: ${escapeHtml(f.raw_name)} | Standardized z-score: ${f.z_score}">
-          <span class="aux-feat-name">${escapeHtml(f.label)}</span>
-          <span class="aux-cat-badge">${escapeHtml(f.category)}</span>
-          <div class="aux-bar-track">
-            <div class="aux-bar-fill" style="width: ${pct}%; background: ${barColor};"></div>
-          </div>
-          <span class="aux-impact-val" style="color: ${barColor};">${f.projected_impact >= 0 ? "+" : ""}${f.projected_impact.toFixed(3)}</span>
-        </div>
-      `;
-    })
-    .join("");
-
-  // Active Dialect Markers
-  const markersEl = document.getElementById("activeMarkersList");
-  if (exp.active_dialect_markers && exp.active_dialect_markers.length > 0) {
-    markersEl.innerHTML = exp.active_dialect_markers
-      .map(
-        (m) => `
-        <div class="marker-pill">
-          <strong>${escapeHtml(m.label)}</strong> <span>(z = +${m.z_score})</span>
-        </div>`
-      )
-      .join("");
-  } else {
-    markersEl.innerHTML = `<span style="color: var(--text-muted); font-size: 13px;">No explicit dialect regex shibboleths triggered (classified via character/word-edge n-grams &amp; contextual embeddings).</span>`;
-  }
-}
-
-function renderWordAttributionsHtml(words) {
-  return words
-    .map((w) => {
-      const ns = w.norm_score;
-      const alpha = Math.min(Math.max(Math.abs(ns) * 0.78, 0.08), 0.78).toFixed(2);
-      const bg =
-        ns >= 0
-          ? `rgba(16, 185, 129, ${alpha})`
-          : `rgba(244, 63, 94, ${alpha})`;
-      const subInfo = w.subwords.join(" + ");
-      return `<span class="attr-word" style="background: ${bg};" title="Subwords: [${escapeHtml(subInfo)}] | Score: ${w.score}">${escapeHtml(w.word)}</span>`;
-    })
-    .join(" ");
 }
 
 /* =========================================================================

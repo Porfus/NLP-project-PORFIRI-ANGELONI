@@ -6,3 +6,36 @@ executed_dialects_dump.ipynb
 executed_interpretability_and_codeswitching.ipynb
 temperature_sampling_analysis.png
 pyproject.toml
+
+# Heavy PyTorch Checkpoints (hosted on GitHub Releases v1.0.0)
+checkpoints/*.pt
+
+# Large Wikipedia Raw Dumps
+wiki-dump/
+
+# Python Virtual Environments
+.venv/
+.venv_demo/
+/tmp/nlp_demo_env/
+env/
+venv/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# macOS System Files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs
+logs/*.log
+*.log
+

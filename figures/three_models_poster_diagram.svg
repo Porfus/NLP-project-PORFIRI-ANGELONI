@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 760" width="100%" height="100%" style="background:#ffffff; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <defs>
+    <filter id="shadow" x="-4%" y="-4%" width="108%" height="112%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#0f172a" flood-opacity="0.07"/>
+    </filter>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#64748b"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-indigo" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#4f46e5"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#059669"/>
+    </marker>
+  </defs>
+
+  <!-- Title Banner -->
+  <text x="700" y="42" text-anchor="middle" font-size="24" font-weight="800" fill="#0f172a">Evolution of the Three Architectures for Italian Dialect &amp; Code-Switching</text>
+  <text x="700" y="68" text-anchor="middle" font-size="14" font-weight="500" fill="#64748b">From surface character n-grams to Neuro-Symbolic Feature Fusion (FF DiBERTO)</text>
+
+  <!-- Shared Input Top Box -->
+  <rect x="350" y="88" width="700" height="56" rx="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.8" filter="url(#shadow)"/>
+  <text x="700" y="112" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">INPUT CODE-SWITCHED SENTENCE</text>
+  <text x="700" y="132" text-anchor="middle" font-size="14" font-style="italic" fill="#0f172a">"Oggi a Reykjavik fa così freddo, <tspan fill="#dc2626" font-weight="700">m&apos;agg accortà</tspan>"</text>
+
+  <!-- Connectors from Input to 3 Columns -->
+  <path d="M 520 144 L 520 165 L 235 165 L 235 186" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-slate)"/>
+  <path d="M 700 144 L 700 186" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <path d="M 880 144 L 880 165 L 1145 165 L 1145 186" fill="none" stroke="#059669" stroke-width="2.5" marker-end="url(#arrow-emerald)"/>
+
+  <!-- ===================================================================== -->
+  <!-- COLUMN 1: BASELINE 1 (VarDial Linear Classifier)                      -->
+  <!-- ===================================================================== -->
+  <rect x="45" y="192" width="380" height="525" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="45" y="192" width="380" height="54" rx="16" fill="#f1f5f9"/>
+  <rect x="45" y="230" width="380" height="16" fill="#f1f5f9"/>
+  <text x="235" y="218" text-anchor="middle" font-size="16" font-weight="800" fill="#1e293b">1. Statistical Baseline (VarDial)</text>
+  <text x="235" y="236" text-anchor="middle" font-size="12" font-weight="600" fill="#64748b">Surface Character N-Grams + Linear Classifier</text>
+
+  <!-- Step 1 -->
+  <rect x="75" y="268" width="320" height="68" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="235" y="294" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">TF-IDF Character N-Grams (3–5)</text>
+  <text x="235" y="314" text-anchor="middle" font-size="12" fill="#475569">Captures local spelling + 938 linguistic features</text>
+  <text x="235" y="329" text-anchor="middle" font-size="11" font-weight="600" fill="#64748b">Dim: 50,938 sparse features</text>
+
+  <line x1="235" y1="336" x2="235" y2="370" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-slate)"/>
+
+  <!-- Step 2 -->
+  <rect x="75" y="376" width="320" height="64" rx="10" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="235" y="404" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">Multinomial Logistic Regression</text>
+  <text x="235" y="424" text-anchor="middle" font-size="12" fill="#475569">Linear weighting (No sentence context)</text>
+
+  <line x1="235" y1="440" x2="235" y2="474" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-slate)"/>
+
+  <!-- Step 3: Pros/Cons -->
+  <rect x="75" y="480" width="320" height="135" rx="10" fill="#fff1f2" stroke="#fecdd3" stroke-width="1.5"/>
+  <text x="95" y="506" font-size="13" font-weight="700" fill="#059669">✓ Good at:</text>
+  <text x="170" y="506" font-size="12.5" fill="#1e293b">Character-level spelling patterns</text>
+  <text x="95" y="534" font-size="13" font-weight="700" fill="#e11d48">✗ Fails at:</text>
+  <text x="168" y="534" font-size="12.5" fill="#881337">Zero syntax/context awareness.</text>
+  <text x="95" y="554" font-size="12" fill="#881337">Italian words overwhelm short dialect switches</text>
+  <text x="95" y="572" font-size="12" fill="#881337">(oversamples Standard Italian).</text>
+  <rect x="95" y="584" width="280" height="22" rx="5" fill="#ffe4e6"/>
+  <text x="235" y="599" text-anchor="middle" font-size="11.5" font-weight="700" fill="#be123c">Macro F1: 0.8962  |  12 Classes</text>
+
+  <!-- Bottom Prediction -->
+  <rect x="75" y="634" width="320" height="60" rx="10" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="235" y="658" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">Output: 12 Varieties Softmax</text>
+  <text x="235" y="678" text-anchor="middle" font-size="12" fill="#dc2626" font-weight="600">Biased toward Standard Italian on switches</text>
+
+
+  <!-- ===================================================================== -->
+  <!-- COLUMN 2: BASELINE 2 (Pure BERT XXL)                                  -->
+  <!-- ===================================================================== -->
+  <rect x="460" y="192" width="400" height="525" rx="16" fill="#ffffff" stroke="#93c5fd" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="460" y="192" width="400" height="54" rx="16" fill="#eff6ff"/>
+  <rect x="460" y="230" width="400" height="16" fill="#eff6ff"/>
+  <text x="660" y="218" text-anchor="middle" font-size="16" font-weight="800" fill="#1e3a8a">2. Neural Baseline (Pure BERT XXL)</text>
+  <text x="660" y="236" text-anchor="middle" font-size="12" font-weight="600" fill="#2563eb">Fine-Tuned Italian Transformer (dbmdz XXL Cased)</text>
+
+  <!-- Step 1 -->
+  <rect x="490" y="268" width="340" height="68" rx="10" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="660" y="292" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">WordPiece Subword Tokenizer</text>
+  <text x="660" y="312" text-anchor="middle" font-size="12" fill="#1e40af">Trained on Standard Italian vocabulary (32k)</text>
+  <text x="660" y="328" text-anchor="middle" font-size="11.5" font-weight="600" fill="#dc2626">Dialect words shatter: "accortà" → ["acc", "##ort", "##à"]</text>
+
+  <line x1="660" y1="336" x2="660" y2="370" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Step 2 -->
+  <rect x="490" y="376" width="340" height="64" rx="10" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="660" y="402" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">12-Layer Transformer Encoder</text>
+  <text x="660" y="422" text-anchor="middle" font-size="12" fill="#1e40af">Extracts contextual [CLS] vector (768-dim)</text>
+
+  <line x1="660" y1="440" x2="660" y2="474" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Step 3: Pros/Cons -->
+  <rect x="490" y="480" width="340" height="135" rx="10" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
+  <text x="510" y="506" font-size="13" font-weight="700" fill="#059669">✓ Good at:</text>
+  <text x="585" y="506" font-size="12.5" fill="#1e293b">Deep sentence syntax &amp; context</text>
+  <text x="510" y="534" font-size="13" font-weight="700" fill="#d97706">✗ Fails at:</text>
+  <text x="583" y="534" font-size="12.5" fill="#92400e">Subword Token Fragmentation.</text>
+  <text x="510" y="554" font-size="12" fill="#92400e">Unseen dialect roots get split into noisy pieces,</text>
+  <text x="510" y="572" font-size="12" fill="#92400e">losing phonetic &amp; morphological suffixes.</text>
+  <rect x="510" y="584" width="300" height="22" rx="5" fill="#fef3c7"/>
+  <text x="660" y="599" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">Macro F1: 0.9662  |  Linear Head (768 → 12)</text>
+
+  <!-- Bottom Prediction -->
+  <rect x="490" y="634" width="340" height="60" rx="10" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+  <text x="660" y="658" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">Output: 12 Varieties Softmax</text>
+  <text x="660" y="678" text-anchor="middle" font-size="12" fill="#d97706" font-weight="600">Confuses dialects when tokens fragment</text>
+
+
+  <!-- ===================================================================== -->
+  <!-- COLUMN 3: PROPOSED MODEL (FF DiBERTO - Neuro-Symbolic Fusion)         -->
+  <!-- ===================================================================== -->
+  <rect x="895" y="192" width="460" height="525" rx="16" fill="#ffffff" stroke="#10b981" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="895" y="192" width="460" height="54" rx="16" fill="#ecfdf5"/>
+  <rect x="895" y="230" width="460" height="16" fill="#ecfdf5"/>
+  <!-- Star badge -->
+  <rect x="1255" y="202" width="84" height="24" rx="12" fill="#059669"/>
+  <text x="1297" y="218" text-anchor="middle" font-size="11" font-weight="800" fill="#ffffff">PROPOSED</text>
+
+  <text x="1095" y="218" text-anchor="middle" font-size="16" font-weight="800" fill="#064e3b">3. FF DiBERTO (Neuro-Symbolic)</text>
+  <text x="1105" y="236" text-anchor="middle" font-size="12" font-weight="600" fill="#059669">Feature Fusion Dialect Italian BERT</text>
+
+  <!-- Dual Stream Branch A (Left inside Col 3): Neural -->
+  <rect x="915" y="268" width="200" height="116" rx="10" fill="#eff6ff" stroke="#60a5fa" stroke-width="1.5"/>
+  <text x="1015" y="290" text-anchor="middle" font-size="13" font-weight="800" fill="#1e3a8a">Neural Stream</text>
+  <text x="1015" y="310" text-anchor="middle" font-size="12" font-weight="600" fill="#1e40af">Italian BERT XXL</text>
+  <text x="1015" y="330" text-anchor="middle" font-size="11" fill="#3b82f6">Contextual Semantics</text>
+  <text x="1015" y="346" text-anchor="middle" font-size="11" fill="#3b82f6">&amp; Sentence Syntax</text>
+  <rect x="935" y="356" width="160" height="20" rx="4" fill="#dbeafe"/>
+  <text x="1015" y="370" text-anchor="middle" font-size="11" font-weight="700" fill="#1e3a8a">[CLS] = 768-dim</text>
+
+  <!-- Dual Stream Branch B (Right inside Col 3): Symbolic -->
+  <rect x="1135" y="268" width="200" height="116" rx="10" fill="#f5f3ff" stroke="#a78bfa" stroke-width="1.5"/>
+  <text x="1235" y="290" text-anchor="middle" font-size="13" font-weight="800" fill="#4c1d95">Symbolic Stream</text>
+  <text x="1235" y="308" text-anchor="middle" font-size="11" fill="#5b21b6">• 863 Char N-Grams (Chi²)</text>
+  <text x="1235" y="323" text-anchor="middle" font-size="11" fill="#5b21b6">• 47 Morpho/Ortho Markers</text>
+  <text x="1235" y="338" text-anchor="middle" font-size="11" fill="#5b21b6">• 24 Dialect Shibboleths</text>
+  <text x="1235" y="353" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">• 4 Fertility Signals</text>
+  <rect x="1150" y="358" width="170" height="20" rx="4" fill="#ede9fe"/>
+  <text x="1235" y="372" text-anchor="middle" font-size="10.5" font-weight="700" fill="#4c1d95">938 → Dense Proj (128-dim)</text>
+
+  <!-- Arrows into Fusion Layer -->
+  <path d="M 1015 384 L 1015 416 L 1085 416" fill="none" stroke="#2563eb" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <path d="M 1235 384 L 1235 416 L 1165 416" fill="none" stroke="#4f46e5" stroke-width="2" marker-end="url(#arrow-indigo)"/>
+
+  <!-- Fusion Node -->
+  <rect x="915" y="402" width="420" height="52" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/>
+  <text x="1125" y="424" text-anchor="middle" font-size="13.5" font-weight="800" fill="#065f46">Late Feature Concatenation: 768 + 128 = 896-dim</text>
+  <text x="1125" y="443" text-anchor="middle" font-size="12" font-weight="600" fill="#047857">Non-Linear MLP Classifier (896 → 256 → 12)</text>
+
+  <line x1="1125" y1="454" x2="1125" y2="476" stroke="#059669" stroke-width="2.2" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Step 3: Why it wins -->
+  <rect x="915" y="480" width="420" height="135" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="935" y="505" font-size="13" font-weight="800" fill="#065f46">★ Best of Both Worlds:</text>
+  <text x="935" y="526" font-size="12" fill="#14532d">1. <tspan font-weight="700">Context + Morphology:</tspan> Combines BERT syntax with explicit</text>
+  <text x="950" y="543" font-size="12" fill="#14532d">character suffixes, clitics, and regional shibboleth lexicons.</text>
+  <text x="935" y="563" font-size="12" fill="#14532d">2. <tspan font-weight="700">Fertility Signal:</tspan> Turns BERT&apos;s subword fragmentation into</text>
+  <text x="950" y="580" font-size="12" fill="#14532d">an explicit clue that a dialectal code-switch just occurred!</text>
+  <rect x="935" y="587" width="380" height="22" rx="5" fill="#dcfce7"/>
+  <text x="1125" y="602" text-anchor="middle" font-size="11.5" font-weight="800" fill="#15803d">Macro F1: 0.9668 (877k Test) | Highest Code-Switch Robustness</text>
+
+  <!-- Bottom Prediction -->
+  <rect x="915" y="634" width="420" height="60" rx="10" fill="#059669" stroke="#047857" stroke-width="1.5"/>
+  <text x="1125" y="658" text-anchor="middle" font-size="14" font-weight="800" fill="#ffffff">✓ Correct Prediction: Neapolitan (nap)</text>
+  <text x="1125" y="679" text-anchor="middle" font-size="12" fill="#d1fae5" font-weight="600">Detects embedded dialect switch inside Italian matrix clause</text>
+</svg>

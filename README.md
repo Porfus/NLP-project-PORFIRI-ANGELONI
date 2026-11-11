@@ -76,7 +76,7 @@ cd NLP-project-PORFIRI-ANGELONI
 
 # 2. Run the demonstration script
 ./run_demo.sh
-```
+``` 
 
 Then open your browser at **`http://127.0.0.1:8000`**.
 

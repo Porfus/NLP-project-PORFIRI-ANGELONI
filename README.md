@@ -20,7 +20,7 @@ Standard Italian pre-trained language models (such as `dbmdz/bert-base-italian-x
 To solve this, we propose **DialectFeatureFusionBERT**, a dual-branch **Neuro-Symbolic architecture** that bridges deep contextual transformer representations with an explicit **938-dimensional linguistic and morphological feature extractor** (incorporating character n-grams, word-edge affixes, dialect regex shibboleths, phonetic rates, and tokenizer fertility metrics).
 
 <p align="center">
-  <img src="figures/three_models_poster_diagram.svg" alt="Architecture Comparison of the Three Evaluated Models" width="100%">
+  <img src="figures/three_models_poster_diagra.svg" alt="Architecture Comparison of the Three Evaluated Models" width="100%">
 </p>
 
 ---
